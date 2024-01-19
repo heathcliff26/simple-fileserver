@@ -4,7 +4,7 @@ import (
 	"log"
 	"strconv"
 
-	"github.com/heathcliff26/containers/apps/simple-fileserver/pkg/fileserver"
+	"github.com/heathcliff26/simple-fileserver/pkg/fileserver"
 )
 
 var (
