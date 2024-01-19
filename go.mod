@@ -1,4 +1,4 @@
-module github.com/heathcliff26/containers/apps/simple-fileserver
+module github.com/heathcliff26/simple-fileserver
 
 go 1.21
 
