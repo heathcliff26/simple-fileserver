@@ -49,7 +49,7 @@ $ podman run -d -p 8080:8080 -v /path/to/content:/webroot ghcr.io/heathcliff26/s
 
 There are different flavors of the image:
 
-| Tag(s)      | Describtion                                                 |
+| Tag(s)      | Description                                                 |
 | ----------- | ----------------------------------------------------------- |
 | **latest**  | Last released version of the image                          |
 | **rolling** | Rolling update of the image, always build from main branch. |
