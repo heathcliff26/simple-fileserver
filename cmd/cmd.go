@@ -2,10 +2,13 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/heathcliff26/simple-fileserver/pkg/version"
 )
 
 const defaultPort = 8080
@@ -17,6 +20,7 @@ func init() {
 	flag.StringVar(&sslKey, "key", "", "SFILESERVER_KEY: SSL private key to use, needs cert as well. Default is no ssl.")
 	flag.BoolVar(&withoutIndex, "no-index", false, "SFILESERVER_NO_INDEX: Do not serve an index for directories, return index.html or 404 instead")
 	flag.BoolVar(&enableLogging, "log", false, "SFILESERVER_LOG: Enable logging requests")
+	flag.BoolVar(&showVersion, "version", false, "Show the version information and exit")
 }
 
 func envBool(target *bool, name string) {
@@ -67,6 +71,10 @@ func parseEnv() {
 // Parse CLI Arguments and check the input.
 func parseFlags() {
 	flag.Parse()
+	if showVersion {
+		fmt.Print(version.Version())
+		os.Exit(0)
+	}
 	parseEnv()
 
 	if webroot == "" {

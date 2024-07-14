@@ -27,6 +27,8 @@ Usage of simple-fileserver:
         SFILESERVER_NO_INDEX: Do not serve an index for directories, return index.html or 404 instead
   -port int
         SFILESERVER_PORT: Specify port for the fileserver to listen on (default 8080)
+  -version
+        Show the version information and exit
   -webroot string
         SFILESERVER_WEBROOT: Required, root directory to serve files from
 ```

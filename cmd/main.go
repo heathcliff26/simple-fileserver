@@ -14,6 +14,7 @@ var (
 	sslKey        string
 	withoutIndex  bool
 	enableLogging bool
+	showVersion   bool
 )
 
 func main() {
