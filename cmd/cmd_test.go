@@ -140,12 +140,14 @@ func TestCmd(t *testing.T) {
 	}
 }
 
-func execExitTest(t *testing.T, test string) {
+func execExitTest(t *testing.T, test string, exitsError bool) {
 	cmd := exec.Command(os.Args[0], "-test.run="+test)
 	cmd.Env = append(os.Environ(), "RUN_CRASH_TEST=1")
 	err := cmd.Run()
-	if err == nil {
+	if exitsError && err == nil {
 		t.Fatal("Process exited without error")
+	} else if !exitsError && err == nil {
+		return
 	}
 	if e, ok := err.(*exec.ExitError); ok && !e.Success() {
 		return
@@ -160,7 +162,7 @@ func TestCmdWebrootMissing(t *testing.T) {
 		// Should not reach here, ensure exit with 0 if it does
 		os.Exit(0)
 	}
-	execExitTest(t, "TestCmdWebrootMissing")
+	execExitTest(t, "TestCmdWebrootMissing", true)
 }
 
 func TestCmdMalformedPortEnvVariable(t *testing.T) {
@@ -171,7 +173,7 @@ func TestCmdMalformedPortEnvVariable(t *testing.T) {
 		// Should not reach here, ensure exit with 0 if it does
 		os.Exit(0)
 	}
-	execExitTest(t, "TestCmdMalformedPortEnvVariable")
+	execExitTest(t, "TestCmdMalformedPortEnvVariable", true)
 }
 
 func TestCmdIncompleteSSL(t *testing.T) {
@@ -183,7 +185,7 @@ func TestCmdIncompleteSSL(t *testing.T) {
 			// Should not reach here, ensure exit with 0 if it does
 			os.Exit(0)
 		}
-		execExitTest(t, "TestCmdIncompleteSSL/NoCert")
+		execExitTest(t, "TestCmdIncompleteSSL/NoCert", true)
 	})
 	t.Run("NoKey", func(t *testing.T) {
 		if os.Getenv("RUN_CRASH_TEST") == "1" {
@@ -193,7 +195,19 @@ func TestCmdIncompleteSSL(t *testing.T) {
 			// Should not reach here, ensure exit with 0 if it does
 			os.Exit(0)
 		}
-		execExitTest(t, "TestCmdIncompleteSSL/NoKey")
+		execExitTest(t, "TestCmdIncompleteSSL/NoKey", true)
 	})
+}
 
+func TestCmdVersion(t *testing.T) {
+	if os.Getenv("RUN_CRASH_TEST") == "1" {
+		err := flag.CommandLine.Parse([]string{"-version"})
+		if err != nil {
+			t.Fatalf("Failed to parse test args: %v", err)
+		}
+		parseFlags()
+		// Should not reach here, ensure exit with 0 if it does
+		os.Exit(0)
+	}
+	execExitTest(t, "TestCmdVersion", false)
 }

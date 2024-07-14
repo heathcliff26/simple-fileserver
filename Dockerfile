@@ -5,15 +5,16 @@ FROM --platform=$BUILDPLATFORM docker.io/library/golang:1.22.5 AS build-stage
 
 ARG BUILDPLATFORM
 ARG TARGETARCH
+ARG RELEASE_VERSION
 
 WORKDIR /app
 
-COPY vendor ./vendor
 COPY go.mod go.sum ./
 COPY cmd ./cmd
 COPY pkg ./pkg
+COPY hack ./hack
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH="${TARGETARCH}" go build -ldflags="-w -s" -o /simple-fileserver ./cmd/
+RUN --mount=type=bind,target=/app/.git,source=.git GOOS=linux GOARCH="${TARGETARCH}" hack/build.sh
 
 #
 # END build-stage
@@ -26,7 +27,7 @@ FROM scratch AS final-stage
 
 WORKDIR /
 
-COPY --from=build-stage /simple-fileserver /
+COPY --from=build-stage /app/bin/simple-fileserver /
 
 EXPOSE 8080
 
