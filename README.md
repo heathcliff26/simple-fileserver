@@ -40,7 +40,17 @@ $ podman run -d -p 8080:8080 -v /path/to/content:/webroot ghcr.io/heathcliff26/s
 
 ### Image location
 
-| Container Registry                                                                                      | Image                                       |
-| ------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| Container Registry                                                                                     | Image                                      |
+| ------------------------------------------------------------------------------------------------------ | ------------------------------------------ |
 | [Github Container](https://github.com/users/heathcliff26/packages/container/package/simple-fileserver) | `ghcr.io/heathcliff26/simple-fileserver`   |
 | [Docker Hub](https://hub.docker.com/repository/docker/heathcliff26/simple-fileserver)                  | `docker.io/heathcliff26/simple-fileserver` |
+
+### Tags
+
+There are different flavors of the image:
+
+| Tag(s)      | Describtion                                                 |
+| ----------- | ----------------------------------------------------------- |
+| **latest**  | Last released version of the image                          |
+| **rolling** | Rolling update of the image, always build from main branch. |
+| **vX.Y.Z**  | Released version of the image                               |
