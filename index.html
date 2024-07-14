@@ -65,6 +65,8 @@
 				
 				<option value="file4">github.com/heathcliff26/simple-fileserver/pkg/fileserver/utils.go (100.0%)</option>
 				
+				<option value="file5">github.com/heathcliff26/simple-fileserver/pkg/version/version.go (73.3%)</option>
+				
 				</select>
 			</div>
 			<div id="legend">
@@ -81,10 +83,13 @@
 
 import (
         "flag"
+        "fmt"
         "log"
         "os"
         "strconv"
         "strings"
+
+        "github.com/heathcliff26/simple-fileserver/pkg/version"
 )
 
 const defaultPort = 8080
@@ -96,6 +101,7 @@ func init() <span class="cov8" title="1">{
         flag.StringVar(&amp;sslKey, "key", "", "SFILESERVER_KEY: SSL private key to use, needs cert as well. Default is no ssl.")
         flag.BoolVar(&amp;withoutIndex, "no-index", false, "SFILESERVER_NO_INDEX: Do not serve an index for directories, return index.html or 404 instead")
         flag.BoolVar(&amp;enableLogging, "log", false, "SFILESERVER_LOG: Enable logging requests")
+        flag.BoolVar(&amp;showVersion, "version", false, "Show the version information and exit")
 }</span>
 
 func envBool(target *bool, name string) <span class="cov8" title="1">{
@@ -146,7 +152,11 @@ func parseEnv() <span class="cov8" title="1">{
 // Parse CLI Arguments and check the input.
 func parseFlags() <span class="cov8" title="1">{
         flag.Parse()
-        parseEnv()
+        if showVersion </span><span class="cov8" title="1">{
+                fmt.Print(version.Version())
+                os.Exit(0)
+        }</span>
+        <span class="cov8" title="1">parseEnv()
 
         if webroot == "" </span><span class="cov8" title="1">{
                 log.Fatal("No Webroot: Either -webroot or SFILESERVER_WEBROOT need to be set")
@@ -174,6 +184,7 @@ var (
         sslKey        string
         withoutIndex  bool
         enableLogging bool
+        showVersion   bool
 )
 
 func main() <span class="cov0" title="0">{
@@ -354,6 +365,41 @@ func ReadUserIP(req *http.Request) string <span class="cov8" title="1">{
                 IPAddress = req.RemoteAddr
         }</span>
         <span class="cov8" title="1">return IPAddress</span>
+}
+</pre>
+		
+		<pre class="file" id="file5" style="display: none">package version
+
+import (
+        "runtime"
+        "runtime/debug"
+)
+
+const Name = "simple-fileserver"
+
+var version = "devel"
+
+func Version() string <span class="cov8" title="1">{
+        var commit string
+        buildinfo, _ := debug.ReadBuildInfo()
+        for _, item := range buildinfo.Settings </span><span class="cov0" title="0">{
+                if item.Key == "vcs.revision" </span><span class="cov0" title="0">{
+                        commit = item.Value
+                        break</span>
+                }
+        }
+        <span class="cov8" title="1">if len(commit) &gt; 7 </span><span class="cov0" title="0">{
+                commit = commit[:7]
+        }</span> else<span class="cov8" title="1"> if commit == "" </span><span class="cov8" title="1">{
+                commit = "Unknown"
+        }</span>
+
+        <span class="cov8" title="1">result := Name + ":\n"
+        result += "    Version: " + version + "\n"
+        result += "    Commit:  " + commit + "\n"
+        result += "    Go:      " + runtime.Version() + "\n"
+
+        return result</span>
 }
 </pre>
 		
