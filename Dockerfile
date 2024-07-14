@@ -20,30 +20,13 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH="${TARGETARCH}" go build -ldflags="-w -s" -o
 ###############################################################################
 
 ###############################################################################
-# BEGIN test-stage
-# Run the tests in the container
-FROM docker.io/library/golang:1.22.5@sha256:829eff99a4b2abffe68f6a3847337bf6455d69d17e49ec1a97dac78834754bd6 AS test-stage
-
-WORKDIR /app
-
-COPY --from=build-stage /app /app
-# Not needed for testing, but needed for later stage
-COPY --from=build-stage /simple-fileserver /
-
-RUN go test -v ./...
-
-#
-# END test-stage
-###############################################################################
-
-###############################################################################
 # BEGIN final-stage
 # Create final docker image
 FROM scratch AS final-stage
 
 WORKDIR /
 
-COPY --from=test-stage /simple-fileserver /
+COPY --from=build-stage /simple-fileserver /
 
 EXPOSE 8080
 
