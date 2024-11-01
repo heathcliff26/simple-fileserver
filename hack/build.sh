@@ -17,6 +17,10 @@ if [ "${RELEASE_VERSION}" != "" ]; then
 fi
 
 output_name="${bin_dir}/simple-fileserver"
+if [ "${1}" != "" ]; then
+    output_name="${bin_dir}/${1}"
+fi
+
 if [ "${GOOS}" == "windows" ]; then
     output_name="${output_name}.exe"
 fi
