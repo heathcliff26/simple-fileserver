@@ -19,6 +19,23 @@ on:
         type: boolean
         default: false
         required: false
+  workflow_call:
+    inputs:
+      tag:
+        description: "Use to set tag, default: rolling"
+        type: string
+        default: "rolling"
+        required: false
+      dry-run:
+        description: "Do not push image"
+        type: boolean
+        default: false
+        required: false
+      latest:
+        description: "Tag latest"
+        type: boolean
+        default: false
+        required: false
   push:
     branches: ["main"]
     paths:
@@ -39,7 +56,33 @@ jobs:
   unit-tests:
     uses: heathcliff26/ci/.github/workflows/golang-unit-tests.yaml@main
 
-  build:
+  build-binary:
+    uses: heathcliff26/ci/.github/workflows/golang-build.yaml@main
+    needs:
+      - lint
+      - unit-tests
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: linux
+            arch: amd64
+          - os: linux
+            arch: arm64
+          - os: windows
+            arch: amd64
+          - os: windows
+            arch: arm64
+    with:
+      release: "${{ github.event_name == 'pull_request' && 'devel' || inputs.tag == '' && 'rolling' || inputs.tag }}"
+      goos: "${{ matrix.os }}"
+      goarch: "${{ matrix.arch }}"
+      artifact: "bin/simple-fileserver-${{ matrix.os }}-${{ matrix.arch }}*"
+      artifact-name: "simple-fileserver-${{ matrix.os }}-${{ matrix.arch }}"
+      cmd: "hack/build.sh simple-fileserver-${{ matrix.os }}-${{ matrix.arch }}"
+    secrets: inherit
+
+  build-image:
     uses: heathcliff26/ci/.github/workflows/build-container.yaml@main
     needs:
       - lint
