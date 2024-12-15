@@ -1,6 +1,6 @@
 module github.com/heathcliff26/simple-fileserver
 
-go 1.21
+go 1.22.0
 
 require github.com/stretchr/testify v1.10.0
 
