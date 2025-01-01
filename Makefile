@@ -18,10 +18,22 @@ test:
 update-deps:
 	hack/update-deps.sh
 
+lint:
+	golangci-lint run -v
+
+fmt:
+	gofmt -s -w ./cmd ./pkg
+
+validate:
+	hack/validate.sh
+
 .PHONY: \
 	default \
 	build \
 	build-image \
 	test \
 	update-deps \
+	lint \
+	fmt \
+	validate \
 	$(NULL)
