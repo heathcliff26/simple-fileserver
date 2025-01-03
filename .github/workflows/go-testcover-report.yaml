@@ -5,12 +5,16 @@ on:
   workflow_dispatch:
   push:
     branches: ["main"]
-    paths:
-      - "*.go"
-      - "**/*.go"
 
 jobs:
   generate-reports:
     uses: heathcliff26/ci/.github/workflows/golang-testcover-report.yaml@main
     secrets: inherit
     permissions: {}
+
+  coveralls:
+    uses: heathcliff26/ci/.github/workflows/golang-unit-tests.yaml@main
+    permissions:
+      contents: read
+    with:
+      coveralls: true
