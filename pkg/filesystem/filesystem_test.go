@@ -59,6 +59,13 @@ func TestIndexlessFilesystem(t *testing.T) {
 			}
 		}
 	})
+	t.Run("InvalidPath", func(t *testing.T) {
+		assert := assert.New(t)
+
+		f, err := fs.Open("not-a-valid-path")
+		assert.Nil(f)
+		assert.Error(err)
+	})
 
 	testMatrix := map[string]string{
 		"File":             "/test.html",
@@ -68,11 +75,10 @@ func TestIndexlessFilesystem(t *testing.T) {
 	for name, path := range testMatrix {
 		t.Run(name, func(t *testing.T) {
 			f, err := fs.Open(path)
-			if assert.Nil(t, err) {
-				err = f.Close()
-				if err != nil {
-					t.Fatalf("Unexpected error closing file: %v", err)
-				}
+			if assert.NoError(t, err) {
+				t.Cleanup(func() {
+					f.Close()
+				})
 			}
 		})
 	}
