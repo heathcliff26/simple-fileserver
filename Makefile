@@ -13,7 +13,7 @@ build-image:
 	podman build -t $(REPOSITORY)/$(CONTAINER_NAME):$(TAG) .
 
 test:
-	go test -v ./...
+	go test -v -covermode=atomic -coverprofile=coverprofile.out ./...
 
 update-deps:
 	hack/update-deps.sh
@@ -27,6 +27,9 @@ fmt:
 validate:
 	hack/validate.sh
 
+coverprofile:
+	hack/coverprofile.sh
+
 .PHONY: \
 	default \
 	build \
@@ -36,4 +39,5 @@ validate:
 	lint \
 	fmt \
 	validate \
+	coverprofile \
 	$(NULL)
