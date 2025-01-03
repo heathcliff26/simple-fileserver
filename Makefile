@@ -4,8 +4,6 @@ REPOSITORY ?= localhost
 CONTAINER_NAME ?= simple-fileserver
 TAG ?= latest
 
-default: build
-
 build:
 	hack/build.sh
 
@@ -30,6 +28,9 @@ validate:
 coverprofile:
 	hack/coverprofile.sh
 
+clean:
+	rm -rf bin coverprofiles coverprofile.out
+
 .PHONY: \
 	default \
 	build \
@@ -40,4 +41,5 @@ coverprofile:
 	fmt \
 	validate \
 	coverprofile \
+	clean \
 	$(NULL)
