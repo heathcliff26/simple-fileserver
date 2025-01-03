@@ -1,3 +1,9 @@
+[![CI](https://github.com/heathcliff26/simple-fileserver/actions/workflows/ci.yaml/badge.svg?event=push)](https://github.com/heathcliff26/simple-fileserver/actions/workflows/ci.yaml)
+[![Coverage Status](https://coveralls.io/repos/github/heathcliff26/simple-fileserver/badge.svg)](https://coveralls.io/github/heathcliff26/simple-fileserver)
+[![Editorconfig Check](https://github.com/heathcliff26/simple-fileserver/actions/workflows/editorconfig-check.yaml/badge.svg?event=push)](https://github.com/heathcliff26/simple-fileserver/actions/workflows/editorconfig-check.yaml)
+[![Generate go test cover report](https://github.com/heathcliff26/simple-fileserver/actions/workflows/go-testcover-report.yaml/badge.svg)](https://github.com/heathcliff26/simple-fileserver/actions/workflows/go-testcover-report.yaml)
+[![Renovate](https://github.com/heathcliff26/simple-fileserver/actions/workflows/renovate.yaml/badge.svg)](https://github.com/heathcliff26/simple-fileserver/actions/workflows/renovate.yaml)
+
 # simple-fileserver
 
 This container contains a simple HTTP Fileserver that serves static files and does nothing else.
