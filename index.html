@@ -59,7 +59,7 @@
 				
 				<option value="file1">github.com/heathcliff26/simple-fileserver/cmd/main.go (0.0%)</option>
 				
-				<option value="file2">github.com/heathcliff26/simple-fileserver/pkg/fileserver/server.go (55.0%)</option>
+				<option value="file2">github.com/heathcliff26/simple-fileserver/pkg/fileserver/server.go (50.0%)</option>
 				
 				<option value="file3">github.com/heathcliff26/simple-fileserver/pkg/fileserver/utils.go (100.0%)</option>
 				
@@ -93,7 +93,7 @@
 import (
         "flag"
         "fmt"
-        "log"
+        "log/slog"
         "os"
         "strconv"
         "strings"
@@ -136,7 +136,8 @@ func parseEnv() <span class="cov7" title="10">{
                         var err error
                         port, err = strconv.Atoi(val)
                         if err != nil </span><span class="cov1" title="1">{
-                                log.Fatalf("Could not parse SFILESERVER_PORT: %v", err)
+                                slog.Error("Could not parse SFILESERVER_PORT", "err", err)
+                                os.Exit(1)
                         }</span>
                 }
         }
@@ -168,19 +169,30 @@ func parseFlags() <span class="cov7" title="11">{
         <span class="cov7" title="10">parseEnv()
 
         if webroot == "" </span><span class="cov1" title="1">{
-                log.Fatal("No Webroot: Either -webroot or SFILESERVER_WEBROOT need to be set")
+                slog.Error("No Webroot: Either -webroot or SFILESERVER_WEBROOT need to be set")
+                os.Exit(1)
         }</span>
         <span class="cov7" title="8">if (sslCert != "" &amp;&amp; sslKey == "") || (sslCert == "" &amp;&amp; sslKey != "") </span><span class="cov3" title="2">{
-                log.Fatal("When using ssl need both -cert and -key to be set")
+                slog.Error("When using ssl need both -cert and -key to be set")
+                os.Exit(1)
         }</span>
-        <span class="cov6" title="6">log.Printf("Settings: webroot=%s, port=%d, sslCert=%s, sslKey=%s, no-index=%t, enableLogging=%t", webroot, port, sslCert, sslKey, withoutIndex, enableLogging)</span>
+
+        <span class="cov6" title="6">slog.Info("Parsed flags",
+                slog.String("webroot", webroot),
+                slog.Int("port", port),
+                slog.String("sslCert", sslCert),
+                slog.String("sslKey", sslKey),
+                slog.Bool("no-index", withoutIndex),
+                slog.Bool("verbose-output", enableLogging),
+        )</span>
 }
 </pre>
 		
 		<pre class="file" id="file1" style="display: none">package main
 
 import (
-        "log"
+        "log/slog"
+        "os"
         "strconv"
 
         "github.com/heathcliff26/simple-fileserver/pkg/fileserver"
@@ -200,21 +212,22 @@ func main() <span class="cov0" title="0">{
         parseFlags()
 
         fs := fileserver.NewFileserver(webroot, !withoutIndex)
-        log.Printf("Serving content from %s", webroot)
 
         fs.Handle("/")
 
         if sslCert != "" &amp;&amp; sslKey != "" </span><span class="cov0" title="0">{
-                log.Print("Enabling ssl")
+                slog.Info("Enabling ssl")
                 fs.UseSSL(sslCert, sslKey)
         }</span>
 
-        <span class="cov0" title="0">fs.Log = enableLogging
+        <span class="cov0" title="0">if enableLogging </span><span class="cov0" title="0">{
+                slog.SetLogLoggerLevel(slog.LevelDebug)
+        }</span>
 
-        log.Printf("Listening on :%d", port)
-        err := fs.ListenAndServe(":" + strconv.Itoa(port))
+        <span class="cov0" title="0">err := fs.ListenAndServe(":" + strconv.Itoa(port))
         if err != nil </span><span class="cov0" title="0">{
-                log.Fatal(err)
+                slog.Error("Failed to run server", "err", err)
+                os.Exit(1)
         }</span>
 }
 </pre>
@@ -223,7 +236,8 @@ func main() <span class="cov0" title="0">{
 
 import (
         "errors"
-        "log"
+        "fmt"
+        "log/slog"
         "net/http"
 
         "github.com/heathcliff26/simple-fileserver/pkg/filesystem"
@@ -237,7 +251,6 @@ type SSLConfig struct {
 type Fileserver struct {
         SSL    SSLConfig
         server http.Handler
-        Log    bool
 }
 
 func NewFileserver(webroot string, index bool) *Fileserver <span class="cov10" title="2">{
@@ -261,13 +274,8 @@ func (rw *StatusResponseWriter) WriteHeader(statusCode int) <span class="cov10" 
 func (s *Fileserver) loggingWrapper(res http.ResponseWriter, req *http.Request) <span class="cov10" title="2">{
         srw := &amp;StatusResponseWriter{ResponseWriter: res}
         s.server.ServeHTTP(srw, req)
-        if s.Log </span><span class="cov1" title="1">{
-                if srw.Status == 0 </span><span class="cov0" title="0">{
-                        srw.Status = http.StatusOK
-                }</span>
-                <span class="cov1" title="1">log.Printf("Received Request: source=\"%s\", status=%d, path=\"%s\"\n", ReadUserIP(req), srw.Status, req.RequestURI)</span>
-        }
-}
+        slog.Debug(fmt.Sprintf("Received Request: source=\"%s\", status=%d, path=\"%s\"\n", ReadUserIP(req), srw.Status, req.RequestURI))
+}</span>
 
 func (s *Fileserver) Handle(path string) <span class="cov0" title="0">{
         http.HandleFunc("/", s.loggingWrapper)
@@ -282,6 +290,8 @@ func (s *Fileserver) UseSSL(cert, key string) <span class="cov1" title="1">{
 }</span>
 
 func (s *Fileserver) ListenAndServe(addr string) error <span class="cov0" title="0">{
+        slog.Info("Starting server", slog.String("addr", addr))
+
         var err error
         if s.SSL.Enabled </span><span class="cov0" title="0">{
                 err = http.ListenAndServeTLS(addr, s.SSL.Certificate, s.SSL.Key, nil)
@@ -304,15 +314,15 @@ import (
         "net/http"
 )
 
-func ReadUserIP(req *http.Request) string <span class="cov8" title="1">{
+func ReadUserIP(req *http.Request) string <span class="cov10" title="2">{
         IPAddress := req.Header.Get("x-real-ip")
-        if IPAddress == "" </span><span class="cov8" title="1">{
+        if IPAddress == "" </span><span class="cov10" title="2">{
                 IPAddress = req.Header.Get("x-forwarded-for")
         }</span>
-        <span class="cov8" title="1">if IPAddress == "" </span><span class="cov8" title="1">{
+        <span class="cov10" title="2">if IPAddress == "" </span><span class="cov10" title="2">{
                 IPAddress = req.RemoteAddr
         }</span>
-        <span class="cov8" title="1">return IPAddress</span>
+        <span class="cov10" title="2">return IPAddress</span>
 }
 </pre>
 		
