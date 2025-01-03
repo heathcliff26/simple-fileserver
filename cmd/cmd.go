@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
+	"log/slog"
 	"os"
 	"strconv"
 	"strings"
@@ -46,7 +46,8 @@ func parseEnv() {
 			var err error
 			port, err = strconv.Atoi(val)
 			if err != nil {
-				log.Fatalf("Could not parse SFILESERVER_PORT: %v", err)
+				slog.Error("Could not parse SFILESERVER_PORT", "err", err)
+				os.Exit(1)
 			}
 		}
 	}
@@ -78,10 +79,20 @@ func parseFlags() {
 	parseEnv()
 
 	if webroot == "" {
-		log.Fatal("No Webroot: Either -webroot or SFILESERVER_WEBROOT need to be set")
+		slog.Error("No Webroot: Either -webroot or SFILESERVER_WEBROOT need to be set")
+		os.Exit(1)
 	}
 	if (sslCert != "" && sslKey == "") || (sslCert == "" && sslKey != "") {
-		log.Fatal("When using ssl need both -cert and -key to be set")
+		slog.Error("When using ssl need both -cert and -key to be set")
+		os.Exit(1)
 	}
-	log.Printf("Settings: webroot=%s, port=%d, sslCert=%s, sslKey=%s, no-index=%t, enableLogging=%t", webroot, port, sslCert, sslKey, withoutIndex, enableLogging)
+
+	slog.Info("Parsed flags",
+		slog.String("webroot", webroot),
+		slog.Int("port", port),
+		slog.String("sslCert", sslCert),
+		slog.String("sslKey", sslKey),
+		slog.Bool("no-index", withoutIndex),
+		slog.Bool("verbose-output", enableLogging),
+	)
 }
