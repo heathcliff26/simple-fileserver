@@ -55,6 +55,8 @@ jobs:
 
   unit-tests:
     uses: heathcliff26/ci/.github/workflows/golang-unit-tests.yaml@main
+    with:
+      coveralls: true
 
   validate:
     uses: heathcliff26/ci/.github/workflows/golang-build.yaml@main
