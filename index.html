@@ -72,8 +72,17 @@
 			<div id="legend">
 				<span>not tracked</span>
 			
-				<span class="cov0">not covered</span>
-				<span class="cov8">covered</span>
+				<span class="cov0">no coverage</span>
+				<span class="cov1">low coverage</span>
+				<span class="cov2">*</span>
+				<span class="cov3">*</span>
+				<span class="cov4">*</span>
+				<span class="cov5">*</span>
+				<span class="cov6">*</span>
+				<span class="cov7">*</span>
+				<span class="cov8">*</span>
+				<span class="cov9">*</span>
+				<span class="cov10">high coverage</span>
 			
 			</div>
 		</div>
@@ -94,7 +103,7 @@ import (
 
 const defaultPort = 8080
 
-func init() <span class="cov8" title="1">{
+func init() <span class="cov6" title="6">{
         flag.StringVar(&amp;webroot, "webroot", "", "SFILESERVER_WEBROOT: Required, root directory to serve files from")
         flag.IntVar(&amp;port, "port", defaultPort, "SFILESERVER_PORT: Specify port for the fileserver to listen on")
         flag.StringVar(&amp;sslCert, "cert", "", "SFILESERVER_CERT: SSL certificate to use, needs key as well. Default is no ssl.")
@@ -104,67 +113,67 @@ func init() <span class="cov8" title="1">{
         flag.BoolVar(&amp;showVersion, "version", false, "Show the version information and exit")
 }</span>
 
-func envBool(target *bool, name string) <span class="cov8" title="1">{
-        if val, ok := os.LookupEnv(name); ok </span><span class="cov8" title="1">{
+func envBool(target *bool, name string) <span class="cov8" title="14">{
+        if val, ok := os.LookupEnv(name); ok </span><span class="cov3" title="2">{
                 *target = strings.ToLower(val) == "true" || val == "1"
         }</span>
 }
 
-func envString(target *string, name string) <span class="cov8" title="1">{
-        if val, ok := os.LookupEnv(name); ok </span><span class="cov8" title="1">{
+func envString(target *string, name string) <span class="cov10" title="22">{
+        if val, ok := os.LookupEnv(name); ok </span><span class="cov7" title="10">{
                 *target = val
         }</span>
 }
 
 // Parse Options not provided by the CLI Arguments from ENV
-func parseEnv() <span class="cov8" title="1">{
-        if webroot == "" </span><span class="cov8" title="1">{
+func parseEnv() <span class="cov7" title="10">{
+        if webroot == "" </span><span class="cov6" title="6">{
                 envString(&amp;webroot, "SFILESERVER_WEBROOT")
         }</span>
 
-        <span class="cov8" title="1">if port == defaultPort </span><span class="cov8" title="1">{
-                if val, ok := os.LookupEnv("SFILESERVER_PORT"); ok </span><span class="cov8" title="1">{
+        <span class="cov7" title="10">if port == defaultPort </span><span class="cov7" title="8">{
+                if val, ok := os.LookupEnv("SFILESERVER_PORT"); ok </span><span class="cov3" title="2">{
                         var err error
                         port, err = strconv.Atoi(val)
-                        if err != nil </span><span class="cov8" title="1">{
+                        if err != nil </span><span class="cov1" title="1">{
                                 log.Fatalf("Could not parse SFILESERVER_PORT: %v", err)
                         }</span>
                 }
         }
 
-        <span class="cov8" title="1">if sslCert == "" </span><span class="cov8" title="1">{
+        <span class="cov7" title="9">if sslCert == "" </span><span class="cov7" title="8">{
                 envString(&amp;sslCert, "SFILESERVER_CERT")
         }</span>
 
-        <span class="cov8" title="1">if sslKey == "" </span><span class="cov8" title="1">{
+        <span class="cov7" title="9">if sslKey == "" </span><span class="cov7" title="8">{
                 envString(&amp;sslKey, "SFILESERVER_KEY")
         }</span>
 
-        <span class="cov8" title="1">if !withoutIndex </span><span class="cov8" title="1">{
+        <span class="cov7" title="9">if !withoutIndex </span><span class="cov6" title="7">{
                 envBool(&amp;withoutIndex, "SFILESERVER_NO_INDEX")
         }</span>
 
-        <span class="cov8" title="1">if !enableLogging </span><span class="cov8" title="1">{
+        <span class="cov7" title="9">if !enableLogging </span><span class="cov6" title="7">{
                 envBool(&amp;enableLogging, "SFILESERVER_LOG")
         }</span>
 }
 
 // Parse CLI Arguments and check the input.
-func parseFlags() <span class="cov8" title="1">{
+func parseFlags() <span class="cov7" title="11">{
         flag.Parse()
-        if showVersion </span><span class="cov8" title="1">{
+        if showVersion </span><span class="cov1" title="1">{
                 fmt.Print(version.Version())
                 os.Exit(0)
         }</span>
-        <span class="cov8" title="1">parseEnv()
+        <span class="cov7" title="10">parseEnv()
 
-        if webroot == "" </span><span class="cov8" title="1">{
+        if webroot == "" </span><span class="cov1" title="1">{
                 log.Fatal("No Webroot: Either -webroot or SFILESERVER_WEBROOT need to be set")
         }</span>
-        <span class="cov8" title="1">if (sslCert != "" &amp;&amp; sslKey == "") || (sslCert == "" &amp;&amp; sslKey != "") </span><span class="cov8" title="1">{
+        <span class="cov7" title="8">if (sslCert != "" &amp;&amp; sslKey == "") || (sslCert == "" &amp;&amp; sslKey != "") </span><span class="cov3" title="2">{
                 log.Fatal("When using ssl need both -cert and -key to be set")
         }</span>
-        <span class="cov8" title="1">log.Printf("Settings: webroot=%s, port=%d, sslCert=%s, sslKey=%s, no-index=%t, enableLogging=%t", webroot, port, sslCert, sslKey, withoutIndex, enableLogging)</span>
+        <span class="cov6" title="6">log.Printf("Settings: webroot=%s, port=%d, sslCert=%s, sslKey=%s, no-index=%t, enableLogging=%t", webroot, port, sslCert, sslKey, withoutIndex, enableLogging)</span>
 }
 </pre>
 		
@@ -222,30 +231,30 @@ type IndexlessFilesystem struct {
 
 // Implement Open() function of interface
 // Only returns without error when the path is either a file or a directory containing an index.html file
-func (ifs IndexlessFilesystem) Open(path string) (http.File, error) <span class="cov8" title="1">{
+func (ifs IndexlessFilesystem) Open(path string) (http.File, error) <span class="cov8" title="3">{
         f, err := ifs.fs.Open(path)
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
         }</span>
 
-        <span class="cov8" title="1">s, err := f.Stat()
+        <span class="cov8" title="3">s, err := f.Stat()
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
         }</span>
 
-        <span class="cov8" title="1">if s.IsDir() </span><span class="cov8" title="1">{
+        <span class="cov8" title="3">if s.IsDir() </span><span class="cov5" title="2">{
                 index := path + "/index.html"
                 _, err := ifs.fs.Open(index)
-                if err != nil </span><span class="cov8" title="1">{
+                if err != nil </span><span class="cov1" title="1">{
                         closeErr := f.Close()
                         if closeErr != nil </span><span class="cov0" title="0">{
                                 return nil, closeErr
                         }</span>
-                        <span class="cov8" title="1">return nil, err</span>
+                        <span class="cov1" title="1">return nil, err</span>
                 }
         }
 
-        <span class="cov8" title="1">return f, nil</span>
+        <span class="cov5" title="2">return f, nil</span>
 }
 
 type IndexedFilesystem struct {
@@ -253,21 +262,21 @@ type IndexedFilesystem struct {
 }
 
 // Simple wrapper around http.Dir.Open to obtain debug information
-func (ifs IndexedFilesystem) Open(path string) (http.File, error) <span class="cov8" title="1">{
+func (ifs IndexedFilesystem) Open(path string) (http.File, error) <span class="cov10" title="4">{
         f, err := ifs.fs.Open(path)
-        if err != nil </span><span class="cov8" title="1">{
+        if err != nil </span><span class="cov1" title="1">{
                 return nil, err
         }</span>
 
-        <span class="cov8" title="1">return f, nil</span>
+        <span class="cov8" title="3">return f, nil</span>
 }
 
 // Return a filesystem with or without index enabled
-func CreateFilesystem(path string, index bool) http.FileSystem <span class="cov8" title="1">{
+func CreateFilesystem(path string, index bool) http.FileSystem <span class="cov8" title="3">{
         fs := http.Dir(path)
-        if index </span><span class="cov8" title="1">{
+        if index </span><span class="cov5" title="2">{
                 return IndexedFilesystem{fs}
-        }</span> else<span class="cov8" title="1"> {
+        }</span> else<span class="cov1" title="1"> {
                 return IndexlessFilesystem{fs}
         }</span>
 }
@@ -292,7 +301,7 @@ type Fileserver struct {
         Log    bool
 }
 
-func NewFileserver(webroot string, index bool) *Fileserver <span class="cov8" title="1">{
+func NewFileserver(webroot string, index bool) *Fileserver <span class="cov1" title="1">{
         fs := CreateFilesystem(webroot, index)
         server := http.FileServer(fs)
         return &amp;Fileserver{
@@ -305,19 +314,19 @@ type StatusResponseWriter struct {
         Status int
 }
 
-func (rw *StatusResponseWriter) WriteHeader(statusCode int) <span class="cov8" title="1">{
+func (rw *StatusResponseWriter) WriteHeader(statusCode int) <span class="cov10" title="2">{
         rw.Status = statusCode
         rw.ResponseWriter.WriteHeader(statusCode)
 }</span>
 
-func (s *Fileserver) loggingWrapper(res http.ResponseWriter, req *http.Request) <span class="cov8" title="1">{
+func (s *Fileserver) loggingWrapper(res http.ResponseWriter, req *http.Request) <span class="cov10" title="2">{
         srw := &amp;StatusResponseWriter{ResponseWriter: res}
         s.server.ServeHTTP(srw, req)
-        if s.Log </span><span class="cov8" title="1">{
+        if s.Log </span><span class="cov1" title="1">{
                 if srw.Status == 0 </span><span class="cov0" title="0">{
                         srw.Status = http.StatusOK
                 }</span>
-                <span class="cov8" title="1">log.Printf("Received Request: source=\"%s\", status=%d, path=\"%s\"\n", ReadUserIP(req), srw.Status, req.RequestURI)</span>
+                <span class="cov1" title="1">log.Printf("Received Request: source=\"%s\", status=%d, path=\"%s\"\n", ReadUserIP(req), srw.Status, req.RequestURI)</span>
         }
 }
 
