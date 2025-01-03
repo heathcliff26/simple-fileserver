@@ -1,6 +1,7 @@
 package fileserver
 
 import (
+	"context"
 	"errors"
 	"log/slog"
 	"net/http"
@@ -54,4 +55,9 @@ func (s *Fileserver) ListenAndServe(addr string) error {
 		return nil
 	}
 	return err
+}
+
+// Calls http.Server.Shutdown(), see it's description for more details
+func (s *Fileserver) Shutdown() error {
+	return s.server.Shutdown(context.Background())
 }
