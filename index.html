@@ -59,11 +59,11 @@
 				
 				<option value="file1">github.com/heathcliff26/simple-fileserver/cmd/main.go (0.0%)</option>
 				
-				<option value="file2">github.com/heathcliff26/simple-fileserver/pkg/fileserver/filesystem.go (87.0%)</option>
+				<option value="file2">github.com/heathcliff26/simple-fileserver/pkg/fileserver/server.go (50.0%)</option>
 				
-				<option value="file3">github.com/heathcliff26/simple-fileserver/pkg/fileserver/server.go (50.0%)</option>
+				<option value="file3">github.com/heathcliff26/simple-fileserver/pkg/fileserver/utils.go (100.0%)</option>
 				
-				<option value="file4">github.com/heathcliff26/simple-fileserver/pkg/fileserver/utils.go (100.0%)</option>
+				<option value="file4">github.com/heathcliff26/simple-fileserver/pkg/filesystem/filesystem.go (85.0%)</option>
 				
 				<option value="file5">github.com/heathcliff26/simple-fileserver/pkg/version/version.go (73.3%)</option>
 				
@@ -222,72 +222,11 @@ func main() <span class="cov0" title="0">{
 		<pre class="file" id="file2" style="display: none">package fileserver
 
 import (
-        "net/http"
-)
-
-type IndexlessFilesystem struct {
-        fs http.FileSystem
-}
-
-// Implement Open() function of interface
-// Only returns without error when the path is either a file or a directory containing an index.html file
-func (ifs IndexlessFilesystem) Open(path string) (http.File, error) <span class="cov8" title="3">{
-        f, err := ifs.fs.Open(path)
-        if err != nil </span><span class="cov0" title="0">{
-                return nil, err
-        }</span>
-
-        <span class="cov8" title="3">s, err := f.Stat()
-        if err != nil </span><span class="cov0" title="0">{
-                return nil, err
-        }</span>
-
-        <span class="cov8" title="3">if s.IsDir() </span><span class="cov5" title="2">{
-                index := path + "/index.html"
-                _, err := ifs.fs.Open(index)
-                if err != nil </span><span class="cov1" title="1">{
-                        closeErr := f.Close()
-                        if closeErr != nil </span><span class="cov0" title="0">{
-                                return nil, closeErr
-                        }</span>
-                        <span class="cov1" title="1">return nil, err</span>
-                }
-        }
-
-        <span class="cov5" title="2">return f, nil</span>
-}
-
-type IndexedFilesystem struct {
-        fs http.FileSystem
-}
-
-// Simple wrapper around http.Dir.Open to obtain debug information
-func (ifs IndexedFilesystem) Open(path string) (http.File, error) <span class="cov10" title="4">{
-        f, err := ifs.fs.Open(path)
-        if err != nil </span><span class="cov1" title="1">{
-                return nil, err
-        }</span>
-
-        <span class="cov8" title="3">return f, nil</span>
-}
-
-// Return a filesystem with or without index enabled
-func CreateFilesystem(path string, index bool) http.FileSystem <span class="cov8" title="3">{
-        fs := http.Dir(path)
-        if index </span><span class="cov5" title="2">{
-                return IndexedFilesystem{fs}
-        }</span> else<span class="cov1" title="1"> {
-                return IndexlessFilesystem{fs}
-        }</span>
-}
-</pre>
-		
-		<pre class="file" id="file3" style="display: none">package fileserver
-
-import (
         "errors"
         "log"
         "net/http"
+
+        "github.com/heathcliff26/simple-fileserver/pkg/filesystem"
 )
 
 type SSLConfig struct {
@@ -302,7 +241,7 @@ type Fileserver struct {
 }
 
 func NewFileserver(webroot string, index bool) *Fileserver <span class="cov1" title="1">{
-        fs := CreateFilesystem(webroot, index)
+        fs := filesystem.CreateFilesystem(webroot, index)
         server := http.FileServer(fs)
         return &amp;Fileserver{
                 server: server,
@@ -359,7 +298,7 @@ func (s *Fileserver) ListenAndServe(addr string) error <span class="cov0" title=
 }
 </pre>
 		
-		<pre class="file" id="file4" style="display: none">package fileserver
+		<pre class="file" id="file3" style="display: none">package fileserver
 
 import (
         "net/http"
@@ -375,6 +314,60 @@ func ReadUserIP(req *http.Request) string <span class="cov8" title="1">{
         }</span>
         <span class="cov8" title="1">return IPAddress</span>
 }
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">package filesystem
+
+import (
+        "net/http"
+)
+
+type IndexlessFilesystem struct {
+        fs http.FileSystem
+}
+
+// Implement Open() function of interface
+// Only returns without error when the path is either a file or a directory containing an index.html file
+func (ifs IndexlessFilesystem) Open(path string) (http.File, error) <span class="cov10" title="3">{
+        f, err := ifs.fs.Open(path)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov10" title="3">s, err := f.Stat()
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov10" title="3">if s.IsDir() </span><span class="cov6" title="2">{
+                index := path + "/index.html"
+                _, err := ifs.fs.Open(index)
+                if err != nil </span><span class="cov1" title="1">{
+                        closeErr := f.Close()
+                        if closeErr != nil </span><span class="cov0" title="0">{
+                                return nil, closeErr
+                        }</span>
+                        <span class="cov1" title="1">return nil, err</span>
+                }
+        }
+
+        <span class="cov6" title="2">return f, nil</span>
+}
+
+// Return a filesystem with or without index enabled
+func CreateFilesystem(path string, index bool) http.FileSystem <span class="cov6" title="2">{
+        fs := http.Dir(path)
+        if index </span><span class="cov1" title="1">{
+                return fs
+        }</span> else<span class="cov1" title="1"> {
+                return NewIndexlessFilesystem(fs)
+        }</span>
+}
+
+// Create an indexless Filesystem from an existing filesystem
+func NewIndexlessFilesystem(fs http.FileSystem) IndexlessFilesystem <span class="cov1" title="1">{
+        return IndexlessFilesystem{fs}
+}</span>
 </pre>
 		
 		<pre class="file" id="file5" style="display: none">package version
