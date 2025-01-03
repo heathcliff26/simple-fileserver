@@ -12,7 +12,7 @@ import (
 )
 
 func TestLoggingWrapper(t *testing.T) {
-	fs := NewFileserver("./testdata", true)
+	fs := NewFileserver("../filesystem/testdata", true)
 
 	req := httptest.NewRequest(http.MethodGet, "/test.html", nil)
 	rr := httptest.NewRecorder()

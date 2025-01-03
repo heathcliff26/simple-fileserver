@@ -4,6 +4,8 @@ import (
 	"errors"
 	"log"
 	"net/http"
+
+	"github.com/heathcliff26/simple-fileserver/pkg/filesystem"
 )
 
 type SSLConfig struct {
@@ -18,7 +20,7 @@ type Fileserver struct {
 }
 
 func NewFileserver(webroot string, index bool) *Fileserver {
-	fs := CreateFilesystem(webroot, index)
+	fs := filesystem.CreateFilesystem(webroot, index)
 	server := http.FileServer(fs)
 	return &Fileserver{
 		server: server,

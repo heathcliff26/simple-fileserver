@@ -1,4 +1,4 @@
-package fileserver
+package filesystem
 
 import (
 	"net/http"
@@ -21,13 +21,13 @@ func TestCreateFilesystem(t *testing.T) {
 			Name:         "withIndex",
 			Path:         "foo",
 			Index:        true,
-			ExpectedType: "fileserver.IndexedFilesystem",
+			ExpectedType: "http.Dir",
 		},
 		{
 			Name:         "withoutIndex",
 			Path:         "foo",
 			Index:        false,
-			ExpectedType: "fileserver.IndexlessFilesystem",
+			ExpectedType: "filesystem.IndexlessFilesystem",
 		},
 	}
 
@@ -79,7 +79,7 @@ func TestIndexlessFilesystem(t *testing.T) {
 }
 
 func TestIndexedFilesystem(t *testing.T) {
-	fs := IndexedFilesystem{fs: http.Dir("./testdata")}
+	fs := http.Dir("./testdata")
 
 	assert := assert.New(t)
 
