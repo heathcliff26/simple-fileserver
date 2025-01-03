@@ -60,7 +60,7 @@ jobs:
     permissions:
       contents: read
     with:
-      coveralls: true
+      coveralls: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
 
   validate:
     uses: heathcliff26/ci/.github/workflows/golang-build.yaml@main
