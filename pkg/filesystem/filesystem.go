@@ -1,4 +1,4 @@
-package fileserver
+package filesystem
 
 import (
 	"net/http"
@@ -36,26 +36,17 @@ func (ifs IndexlessFilesystem) Open(path string) (http.File, error) {
 	return f, nil
 }
 
-type IndexedFilesystem struct {
-	fs http.FileSystem
-}
-
-// Simple wrapper around http.Dir.Open to obtain debug information
-func (ifs IndexedFilesystem) Open(path string) (http.File, error) {
-	f, err := ifs.fs.Open(path)
-	if err != nil {
-		return nil, err
-	}
-
-	return f, nil
-}
-
 // Return a filesystem with or without index enabled
 func CreateFilesystem(path string, index bool) http.FileSystem {
 	fs := http.Dir(path)
 	if index {
-		return IndexedFilesystem{fs}
+		return fs
 	} else {
-		return IndexlessFilesystem{fs}
+		return NewIndexlessFilesystem(fs)
 	}
+}
+
+// Create an indexless Filesystem from an existing filesystem
+func NewIndexlessFilesystem(fs http.FileSystem) IndexlessFilesystem {
+	return IndexlessFilesystem{fs}
 }
