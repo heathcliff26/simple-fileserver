@@ -11,7 +11,7 @@ build-image:
 	podman build -t $(REPOSITORY)/$(CONTAINER_NAME):$(TAG) .
 
 test:
-	go test -v -covermode=atomic -coverprofile=coverprofile.out ./...
+	go test -v -coverprofile=coverprofile.out ./...
 
 update-deps:
 	hack/update-deps.sh
