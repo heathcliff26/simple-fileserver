@@ -52,20 +52,28 @@ on:
 jobs:
   lint:
     uses: heathcliff26/ci/.github/workflows/golang-lint.yaml@main
+    permissions:
+      contents: read
 
   unit-tests:
     uses: heathcliff26/ci/.github/workflows/golang-unit-tests.yaml@main
+    permissions:
+      contents: read
     with:
       coveralls: true
 
   validate:
     uses: heathcliff26/ci/.github/workflows/golang-build.yaml@main
+    permissions:
+      contents: read
     with:
       cache: false
       cmd: "make validate"
 
   build-binary:
     uses: heathcliff26/ci/.github/workflows/golang-build.yaml@main
+    permissions:
+      contents: read
     needs:
       - lint
       - unit-tests
