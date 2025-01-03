@@ -23,8 +23,6 @@ func main() {
 
 	fs := fileserver.NewFileserver(webroot, !withoutIndex)
 
-	fs.Handle("/")
-
 	if sslCert != "" && sslKey != "" {
 		slog.Info("Enabling ssl")
 		fs.UseSSL(sslCert, sslKey)
