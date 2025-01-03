@@ -1,7 +1,8 @@
 package main
 
 import (
-	"log"
+	"log/slog"
+	"os"
 	"strconv"
 
 	"github.com/heathcliff26/simple-fileserver/pkg/fileserver"
@@ -21,20 +22,21 @@ func main() {
 	parseFlags()
 
 	fs := fileserver.NewFileserver(webroot, !withoutIndex)
-	log.Printf("Serving content from %s", webroot)
 
 	fs.Handle("/")
 
 	if sslCert != "" && sslKey != "" {
-		log.Print("Enabling ssl")
+		slog.Info("Enabling ssl")
 		fs.UseSSL(sslCert, sslKey)
 	}
 
-	fs.Log = enableLogging
+	if enableLogging {
+		slog.SetLogLoggerLevel(slog.LevelDebug)
+	}
 
-	log.Printf("Listening on :%d", port)
 	err := fs.ListenAndServe(":" + strconv.Itoa(port))
 	if err != nil {
-		log.Fatal(err)
+		slog.Error("Failed to run server", "err", err)
+		os.Exit(1)
 	}
 }

@@ -3,6 +3,7 @@ package fileserver
 import (
 	"bytes"
 	"log"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -29,7 +30,10 @@ func TestLoggingWrapper(t *testing.T) {
 
 	assert.Empty(buf.String())
 
-	fs.Log = true
+	slog.SetLogLoggerLevel(slog.LevelDebug)
+	t.Cleanup(func() {
+		slog.SetLogLoggerLevel(slog.LevelInfo)
+	})
 
 	fs.loggingWrapper(rr, req)
 	output := buf.String()

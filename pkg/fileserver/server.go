@@ -2,7 +2,8 @@ package fileserver
 
 import (
 	"errors"
-	"log"
+	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/heathcliff26/simple-fileserver/pkg/filesystem"
@@ -16,7 +17,6 @@ type SSLConfig struct {
 type Fileserver struct {
 	SSL    SSLConfig
 	server http.Handler
-	Log    bool
 }
 
 func NewFileserver(webroot string, index bool) *Fileserver {
@@ -40,12 +40,7 @@ func (rw *StatusResponseWriter) WriteHeader(statusCode int) {
 func (s *Fileserver) loggingWrapper(res http.ResponseWriter, req *http.Request) {
 	srw := &StatusResponseWriter{ResponseWriter: res}
 	s.server.ServeHTTP(srw, req)
-	if s.Log {
-		if srw.Status == 0 {
-			srw.Status = http.StatusOK
-		}
-		log.Printf("Received Request: source=\"%s\", status=%d, path=\"%s\"\n", ReadUserIP(req), srw.Status, req.RequestURI)
-	}
+	slog.Debug(fmt.Sprintf("Received Request: source=\"%s\", status=%d, path=\"%s\"\n", ReadUserIP(req), srw.Status, req.RequestURI))
 }
 
 func (s *Fileserver) Handle(path string) {
@@ -61,6 +56,8 @@ func (s *Fileserver) UseSSL(cert, key string) {
 }
 
 func (s *Fileserver) ListenAndServe(addr string) error {
+	slog.Info("Starting server", slog.String("addr", addr))
+
 	var err error
 	if s.SSL.Enabled {
 		err = http.ListenAndServeTLS(addr, s.SSL.Certificate, s.SSL.Key, nil)
