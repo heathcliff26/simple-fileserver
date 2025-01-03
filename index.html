@@ -57,9 +57,9 @@
 				
 				<option value="file0">github.com/heathcliff26/simple-fileserver/cmd/cmd.go (100.0%)</option>
 				
-				<option value="file1">github.com/heathcliff26/simple-fileserver/cmd/main.go (0.0%)</option>
+				<option value="file1">github.com/heathcliff26/simple-fileserver/cmd/main.go (100.0%)</option>
 				
-				<option value="file2">github.com/heathcliff26/simple-fileserver/pkg/fileserver/server.go (30.8%)</option>
+				<option value="file2">github.com/heathcliff26/simple-fileserver/pkg/fileserver/server.go (100.0%)</option>
 				
 				<option value="file3">github.com/heathcliff26/simple-fileserver/pkg/filesystem/filesystem.go (94.4%)</option>
 				
@@ -199,22 +199,22 @@ var (
         showVersion   bool
 )
 
-func main() <span class="cov0" title="0">{
+func main() <span class="cov8" title="1">{
         parseFlags()
 
         fs := fileserver.NewFileserver(webroot, !withoutIndex)
 
-        if sslCert != "" &amp;&amp; sslKey != "" </span><span class="cov0" title="0">{
+        if sslCert != "" &amp;&amp; sslKey != "" </span><span class="cov8" title="1">{
                 slog.Info("Enabling ssl")
                 fs.UseSSL(sslCert, sslKey)
         }</span>
 
-        <span class="cov0" title="0">if enableLogging </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if enableLogging </span><span class="cov8" title="1">{
                 slog.SetLogLoggerLevel(slog.LevelDebug)
         }</span>
 
-        <span class="cov0" title="0">err := fs.ListenAndServe(":" + strconv.Itoa(port))
-        if err != nil </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">err := fs.ListenAndServe(":" + strconv.Itoa(port))
+        if err != nil </span><span class="cov8" title="1">{
                 slog.Error("Failed to run server", "err", err)
                 os.Exit(1)
         }</span>
@@ -224,6 +224,7 @@ func main() <span class="cov0" title="0">{
 		<pre class="file" id="file2" style="display: none">package fileserver
 
 import (
+        "context"
         "errors"
         "log/slog"
         "net/http"
@@ -260,24 +261,29 @@ func (s *Fileserver) UseSSL(cert, key string) <span class="cov8" title="1">{
         }
 }</span>
 
-func (s *Fileserver) ListenAndServe(addr string) error <span class="cov0" title="0">{
+func (s *Fileserver) ListenAndServe(addr string) error <span class="cov8" title="1">{
         s.server.Addr = addr
         slog.Info("Starting server", slog.String("addr", addr))
 
         var err error
-        if s.SSL.Enabled </span><span class="cov0" title="0">{
+        if s.SSL.Enabled </span><span class="cov8" title="1">{
                 err = s.server.ListenAndServeTLS(s.SSL.Certificate, s.SSL.Key)
 
-        }</span> else<span class="cov0" title="0"> {
+        }</span> else<span class="cov8" title="1"> {
                 err = s.server.ListenAndServe()
         }</span>
 
         // This just means the server was closed after running
-        <span class="cov0" title="0">if errors.Is(err, http.ErrServerClosed) </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if errors.Is(err, http.ErrServerClosed) </span><span class="cov8" title="1">{
                 return nil
         }</span>
-        <span class="cov0" title="0">return err</span>
+        <span class="cov8" title="1">return err</span>
 }
+
+// Calls http.Server.Shutdown(), see it's description for more details
+func (s *Fileserver) Shutdown() error <span class="cov8" title="1">{
+        return s.server.Shutdown(context.Background())
+}</span>
 </pre>
 		
 		<pre class="file" id="file3" style="display: none">package filesystem
