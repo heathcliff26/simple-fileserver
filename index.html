@@ -59,11 +59,11 @@
 				
 				<option value="file1">github.com/heathcliff26/simple-fileserver/cmd/main.go (0.0%)</option>
 				
-				<option value="file2">github.com/heathcliff26/simple-fileserver/pkg/fileserver/server.go (50.0%)</option>
+				<option value="file2">github.com/heathcliff26/simple-fileserver/pkg/fileserver/server.go (55.0%)</option>
 				
 				<option value="file3">github.com/heathcliff26/simple-fileserver/pkg/fileserver/utils.go (100.0%)</option>
 				
-				<option value="file4">github.com/heathcliff26/simple-fileserver/pkg/filesystem/filesystem.go (85.0%)</option>
+				<option value="file4">github.com/heathcliff26/simple-fileserver/pkg/filesystem/filesystem.go (94.4%)</option>
 				
 				<option value="file5">github.com/heathcliff26/simple-fileserver/pkg/version/version.go (73.3%)</option>
 				
@@ -240,7 +240,7 @@ type Fileserver struct {
         Log    bool
 }
 
-func NewFileserver(webroot string, index bool) *Fileserver <span class="cov1" title="1">{
+func NewFileserver(webroot string, index bool) *Fileserver <span class="cov10" title="2">{
         fs := filesystem.CreateFilesystem(webroot, index)
         server := http.FileServer(fs)
         return &amp;Fileserver{
@@ -273,7 +273,7 @@ func (s *Fileserver) Handle(path string) <span class="cov0" title="0">{
         http.HandleFunc("/", s.loggingWrapper)
 }</span>
 
-func (s *Fileserver) UseSSL(cert, key string) <span class="cov0" title="0">{
+func (s *Fileserver) UseSSL(cert, key string) <span class="cov1" title="1">{
         s.SSL = SSLConfig{
                 Enabled:     true,
                 Certificate: cert,
@@ -328,34 +328,31 @@ type IndexlessFilesystem struct {
 
 // Implement Open() function of interface
 // Only returns without error when the path is either a file or a directory containing an index.html file
-func (ifs IndexlessFilesystem) Open(path string) (http.File, error) <span class="cov10" title="3">{
+func (ifs IndexlessFilesystem) Open(path string) (http.File, error) <span class="cov10" title="4">{
         f, err := ifs.fs.Open(path)
+        if err != nil </span><span class="cov1" title="1">{
+                return nil, err
+        }</span>
+
+        <span class="cov8" title="3">s, err := f.Stat()
         if err != nil </span><span class="cov0" title="0">{
                 return nil, err
         }</span>
 
-        <span class="cov10" title="3">s, err := f.Stat()
-        if err != nil </span><span class="cov0" title="0">{
-                return nil, err
-        }</span>
-
-        <span class="cov10" title="3">if s.IsDir() </span><span class="cov6" title="2">{
+        <span class="cov8" title="3">if s.IsDir() </span><span class="cov5" title="2">{
                 index := path + "/index.html"
                 _, err := ifs.fs.Open(index)
                 if err != nil </span><span class="cov1" title="1">{
-                        closeErr := f.Close()
-                        if closeErr != nil </span><span class="cov0" title="0">{
-                                return nil, closeErr
-                        }</span>
-                        <span class="cov1" title="1">return nil, err</span>
-                }
+                        f.Close()
+                        return nil, err
+                }</span>
         }
 
-        <span class="cov6" title="2">return f, nil</span>
+        <span class="cov5" title="2">return f, nil</span>
 }
 
 // Return a filesystem with or without index enabled
-func CreateFilesystem(path string, index bool) http.FileSystem <span class="cov6" title="2">{
+func CreateFilesystem(path string, index bool) http.FileSystem <span class="cov5" title="2">{
         fs := http.Dir(path)
         if index </span><span class="cov1" title="1">{
                 return fs
