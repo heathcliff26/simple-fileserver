@@ -59,11 +59,11 @@
 				
 				<option value="file1">github.com/heathcliff26/simple-fileserver/cmd/main.go (0.0%)</option>
 				
-				<option value="file2">github.com/heathcliff26/simple-fileserver/pkg/fileserver/server.go (50.0%)</option>
+				<option value="file2">github.com/heathcliff26/simple-fileserver/pkg/fileserver/server.go (30.8%)</option>
 				
-				<option value="file3">github.com/heathcliff26/simple-fileserver/pkg/fileserver/utils.go (100.0%)</option>
+				<option value="file3">github.com/heathcliff26/simple-fileserver/pkg/filesystem/filesystem.go (94.4%)</option>
 				
-				<option value="file4">github.com/heathcliff26/simple-fileserver/pkg/filesystem/filesystem.go (94.4%)</option>
+				<option value="file4">github.com/heathcliff26/simple-fileserver/pkg/middleware/logging.go (100.0%)</option>
 				
 				<option value="file5">github.com/heathcliff26/simple-fileserver/pkg/version/version.go (73.3%)</option>
 				
@@ -213,8 +213,6 @@ func main() <span class="cov0" title="0">{
 
         fs := fileserver.NewFileserver(webroot, !withoutIndex)
 
-        fs.Handle("/")
-
         if sslCert != "" &amp;&amp; sslKey != "" </span><span class="cov0" title="0">{
                 slog.Info("Enabling ssl")
                 fs.UseSSL(sslCert, sslKey)
@@ -236,11 +234,11 @@ func main() <span class="cov0" title="0">{
 
 import (
         "errors"
-        "fmt"
         "log/slog"
         "net/http"
 
         "github.com/heathcliff26/simple-fileserver/pkg/filesystem"
+        "github.com/heathcliff26/simple-fileserver/pkg/middleware"
 )
 
 type SSLConfig struct {
@@ -250,38 +248,20 @@ type SSLConfig struct {
 
 type Fileserver struct {
         SSL    SSLConfig
-        server http.Handler
+        server *http.Server
 }
 
-func NewFileserver(webroot string, index bool) *Fileserver <span class="cov10" title="2">{
+func NewFileserver(webroot string, index bool) *Fileserver <span class="cov8" title="1">{
         fs := filesystem.CreateFilesystem(webroot, index)
         server := http.FileServer(fs)
         return &amp;Fileserver{
-                server: server,
+                server: &amp;http.Server{
+                        Handler: middleware.Logging(server),
+                },
         }
 }</span>
 
-type StatusResponseWriter struct {
-        http.ResponseWriter
-        Status int
-}
-
-func (rw *StatusResponseWriter) WriteHeader(statusCode int) <span class="cov10" title="2">{
-        rw.Status = statusCode
-        rw.ResponseWriter.WriteHeader(statusCode)
-}</span>
-
-func (s *Fileserver) loggingWrapper(res http.ResponseWriter, req *http.Request) <span class="cov10" title="2">{
-        srw := &amp;StatusResponseWriter{ResponseWriter: res}
-        s.server.ServeHTTP(srw, req)
-        slog.Debug(fmt.Sprintf("Received Request: source=\"%s\", status=%d, path=\"%s\"\n", ReadUserIP(req), srw.Status, req.RequestURI))
-}</span>
-
-func (s *Fileserver) Handle(path string) <span class="cov0" title="0">{
-        http.HandleFunc("/", s.loggingWrapper)
-}</span>
-
-func (s *Fileserver) UseSSL(cert, key string) <span class="cov1" title="1">{
+func (s *Fileserver) UseSSL(cert, key string) <span class="cov8" title="1">{
         s.SSL = SSLConfig{
                 Enabled:     true,
                 Certificate: cert,
@@ -290,14 +270,15 @@ func (s *Fileserver) UseSSL(cert, key string) <span class="cov1" title="1">{
 }</span>
 
 func (s *Fileserver) ListenAndServe(addr string) error <span class="cov0" title="0">{
+        s.server.Addr = addr
         slog.Info("Starting server", slog.String("addr", addr))
 
         var err error
         if s.SSL.Enabled </span><span class="cov0" title="0">{
-                err = http.ListenAndServeTLS(addr, s.SSL.Certificate, s.SSL.Key, nil)
+                err = s.server.ListenAndServeTLS(s.SSL.Certificate, s.SSL.Key)
 
         }</span> else<span class="cov0" title="0"> {
-                err = http.ListenAndServe(addr, nil)
+                err = s.server.ListenAndServe()
         }</span>
 
         // This just means the server was closed after running
@@ -308,25 +289,7 @@ func (s *Fileserver) ListenAndServe(addr string) error <span class="cov0" title=
 }
 </pre>
 		
-		<pre class="file" id="file3" style="display: none">package fileserver
-
-import (
-        "net/http"
-)
-
-func ReadUserIP(req *http.Request) string <span class="cov10" title="2">{
-        IPAddress := req.Header.Get("x-real-ip")
-        if IPAddress == "" </span><span class="cov10" title="2">{
-                IPAddress = req.Header.Get("x-forwarded-for")
-        }</span>
-        <span class="cov10" title="2">if IPAddress == "" </span><span class="cov10" title="2">{
-                IPAddress = req.RemoteAddr
-        }</span>
-        <span class="cov10" title="2">return IPAddress</span>
-}
-</pre>
-		
-		<pre class="file" id="file4" style="display: none">package filesystem
+		<pre class="file" id="file3" style="display: none">package filesystem
 
 import (
         "net/http"
@@ -375,6 +338,57 @@ func CreateFilesystem(path string, index bool) http.FileSystem <span class="cov5
 func NewIndexlessFilesystem(fs http.FileSystem) IndexlessFilesystem <span class="cov1" title="1">{
         return IndexlessFilesystem{fs}
 }</span>
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">package middleware
+
+import (
+        "log/slog"
+        "net/http"
+        "time"
+)
+
+type responseWrapper struct {
+        http.ResponseWriter
+        statusCode int
+}
+
+func (res *responseWrapper) WriteHeader(statusCode int) <span class="cov4" title="2">{
+        res.ResponseWriter.WriteHeader(statusCode)
+        res.statusCode = statusCode
+}</span>
+
+func Logging(next http.Handler) http.Handler <span class="cov6" title="3">{
+        return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) </span><span class="cov6" title="3">{
+                start := time.Now()
+
+                wrapped := &amp;responseWrapper{
+                        ResponseWriter: res,
+                        statusCode:     http.StatusOK,
+                }
+
+                next.ServeHTTP(wrapped, req)
+
+                slog.Debug("Got Request",
+                        slog.String("source", ReadUserIP(req)),
+                        slog.Int("status", wrapped.statusCode),
+                        slog.String("method", req.Method),
+                        slog.String("path", req.URL.Path),
+                        slog.Any("took", time.Since(start)),
+                )
+        }</span>)
+}
+
+func ReadUserIP(req *http.Request) string <span class="cov10" title="6">{
+        IPAddress := req.Header.Get("x-real-ip")
+        if IPAddress == "" </span><span class="cov9" title="5">{
+                IPAddress = req.Header.Get("x-forwarded-for")
+        }</span>
+        <span class="cov10" title="6">if IPAddress == "" </span><span class="cov7" title="4">{
+                IPAddress = req.RemoteAddr
+        }</span>
+        <span class="cov10" title="6">return IPAddress</span>
+}
 </pre>
 		
 		<pre class="file" id="file5" style="display: none">package version
