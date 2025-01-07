@@ -2,11 +2,11 @@
 
 set -e
 
-script_dir="$(dirname "${BASH_SOURCE[0]}" | xargs realpath)/.."
+base_dir="$(dirname "${BASH_SOURCE[0]}" | xargs realpath)/.."
 
-pushd "${script_dir}" >/dev/null
+pushd "${base_dir}" >/dev/null
 
-OUT_DIR="${script_dir}/coverprofiles"
+OUT_DIR="${base_dir}/coverprofiles"
 
 if [ ! -d "${OUT_DIR}" ]; then
     mkdir "${OUT_DIR}"
