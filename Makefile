@@ -36,6 +36,10 @@ validate:
 coverprofile:
 	hack/coverprofile.sh
 
+# Scan code for vulnerabilities using gosec
+gosec:
+	gosec ./...
+
 # Clean build artifacts
 clean:
 	rm -rf bin coverprofiles coverprofile.out
@@ -58,6 +62,7 @@ help:
 	fmt \
 	validate \
 	coverprofile \
+	gosec \
 	clean \
 	help \
 	$(NULL)
