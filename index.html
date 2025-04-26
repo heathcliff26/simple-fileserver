@@ -228,6 +228,7 @@ import (
         "errors"
         "log/slog"
         "net/http"
+        "time"
 
         "github.com/heathcliff26/simple-fileserver/pkg/filesystem"
         "github.com/heathcliff26/simple-fileserver/pkg/middleware"
@@ -248,7 +249,8 @@ func NewFileserver(webroot string, index bool) *Fileserver <span class="cov8" ti
         server := http.FileServer(fs)
         return &amp;Fileserver{
                 server: &amp;http.Server{
-                        Handler: middleware.Logging(server),
+                        Handler:     middleware.Logging(server),
+                        ReadTimeout: 10 * time.Second,
                 },
         }
 }</span>
@@ -313,7 +315,7 @@ func (ifs IndexlessFilesystem) Open(path string) (http.File, error) <span class=
                 index := path + "/index.html"
                 _, err := ifs.fs.Open(index)
                 if err != nil </span><span class="cov8" title="1">{
-                        f.Close()
+                        _ = f.Close()
                         return nil, err
                 }</span>
         }
