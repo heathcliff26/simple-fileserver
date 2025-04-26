@@ -25,7 +25,7 @@ func (ifs IndexlessFilesystem) Open(path string) (http.File, error) {
 		index := path + "/index.html"
 		_, err := ifs.fs.Open(index)
 		if err != nil {
-			f.Close()
+			_ = f.Close()
 			return nil, err
 		}
 	}

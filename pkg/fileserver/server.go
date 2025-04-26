@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	"time"
 
 	"github.com/heathcliff26/simple-fileserver/pkg/filesystem"
 	"github.com/heathcliff26/simple-fileserver/pkg/middleware"
@@ -25,7 +26,8 @@ func NewFileserver(webroot string, index bool) *Fileserver {
 	server := http.FileServer(fs)
 	return &Fileserver{
 		server: &http.Server{
-			Handler: middleware.Logging(server),
+			Handler:     middleware.Logging(server),
+			ReadTimeout: 10 * time.Second,
 		},
 	}
 }
