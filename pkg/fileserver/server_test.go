@@ -52,10 +52,13 @@ func TestListen(t *testing.T) {
 
 	assert.NoError(fs.Shutdown(), "Should shutdown server")
 
-	select {
-	case err := <-ch:
-		assert.NoError(err, "Server should exit without error")
-	case <-time.After(time.Second * 5):
-		t.Fatal("Server did not shutdown in time")
-	}
+	assert.Eventually(func() bool {
+		select {
+		case err := <-ch:
+			assert.NoError(err, "Server should exit without error")
+			return true
+		default:
+			return false
+		}
+	}, 5*time.Second, 100*time.Millisecond, "Server should shutdown")
 }
