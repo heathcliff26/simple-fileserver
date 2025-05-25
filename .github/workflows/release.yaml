@@ -20,13 +20,27 @@ on:
         description: "Tag container as latest"
         type: boolean
         default: true
+      prerelease:
+        description: "Mark the release as a prerelease"
+        type: boolean
+        default: false
 
 jobs:
+  tag:
+    uses: heathcliff26/ci/.github/workflows/tag.yaml@main
+    permissions:
+      contents: write
+    with:
+      tag: ${{ inputs.tag }}
+      overwrite: ${{ inputs.update }}
+    secrets: inherit
+
   build:
     uses: ./.github/workflows/ci.yaml
     permissions:
       contents: read
       packages: write
+      security-events: write
     with:
       tag: ${{ inputs.tag }}
       latest: ${{ inputs.latest }}
@@ -43,3 +57,4 @@ jobs:
       tag: ${{ inputs.tag }}
       release-artifacts: "release/*"
       artifacts: "simple-fileserver-*"
+      prerelease: ${{ inputs.prerelease }}
