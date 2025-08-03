@@ -21,13 +21,13 @@ RUN GOOS=linux GOARCH="${TARGETARCH}" hack/build.sh
 # Create final docker image
 FROM scratch AS final-stage
 
-WORKDIR /
-
 COPY --from=build-stage /app/bin/simple-fileserver /
 
 EXPOSE 8080
 
 USER 1001
+
+WORKDIR /webroot
 
 ENTRYPOINT ["/simple-fileserver", "-webroot", "/webroot"]
 
