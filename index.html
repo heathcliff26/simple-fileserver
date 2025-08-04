@@ -65,7 +65,7 @@
 				
 				<option value="file4">github.com/heathcliff26/simple-fileserver/pkg/middleware/logging.go (100.0%)</option>
 				
-				<option value="file5">github.com/heathcliff26/simple-fileserver/pkg/version/version.go (80.0%)</option>
+				<option value="file5">github.com/heathcliff26/simple-fileserver/pkg/version/version.go (92.0%)</option>
 				
 				</select>
 			</div>
@@ -405,28 +405,58 @@ func ReadUserIP(req *http.Request) string <span class="cov8" title="1">{
 import (
         "runtime"
         "runtime/debug"
+        "strings"
 )
 
 const Name = "simple-fileserver"
 
-// Return a formated string containing the version, git commit and go version the app was compiled with.
-func Version() string <span class="cov8" title="1">{
-        var commit string
-        buildinfo, _ := debug.ReadBuildInfo()
-        for _, item := range buildinfo.Settings </span><span class="cov8" title="1">{
-                if item.Key == "vcs.revision" </span><span class="cov0" title="0">{
-                        commit = item.Value
-                        break</span>
+// NOTE: The $Format strings are replaced during 'git archive' thanks to the
+// companion .gitattributes file containing 'export-subst' in this same
+// directory.  See also https://git-scm.com/docs/gitattributes
+var gitCommit string = "$Format:%H$" // sha1 from git, output of $(git rev-parse HEAD)
+var gitVersion string = ""
+
+func init() <span class="cov8" title="1">{
+        initGitCommit()
+        initGitVersion()
+}</span>
+
+func initGitCommit() <span class="cov8" title="1">{
+        if strings.HasPrefix(gitCommit, "$Format") </span><span class="cov8" title="1">{
+                var commit string
+                buildinfo, _ := debug.ReadBuildInfo()
+                for _, item := range buildinfo.Settings </span><span class="cov8" title="1">{
+                        if item.Key == "vcs.revision" </span><span class="cov0" title="0">{
+                                commit = item.Value
+                                break</span>
+                        }
                 }
+                <span class="cov8" title="1">if commit == "" </span><span class="cov8" title="1">{
+                        commit = "Unknown"
+                }</span>
+                <span class="cov8" title="1">gitCommit = commit</span>
         }
-        <span class="cov8" title="1">if len(commit) &gt; 7 </span><span class="cov0" title="0">{
+        <span class="cov8" title="1">if gitCommit == "" </span><span class="cov8" title="1">{
+                gitCommit = "Unknown"
+        }</span>
+}
+
+func initGitVersion() <span class="cov8" title="1">{
+        if gitVersion == "" </span><span class="cov8" title="1">{
+                buildinfo, _ := debug.ReadBuildInfo()
+                gitVersion = buildinfo.Main.Version
+        }</span>
+}
+
+// Return a formatted string containing the version, git commit and go version the app was compiled with.
+func Version() string <span class="cov8" title="1">{
+        commit := gitCommit
+        if len(commit) &gt; 7 </span><span class="cov8" title="1">{
                 commit = commit[:7]
-        }</span> else<span class="cov8" title="1"> if commit == "" </span><span class="cov8" title="1">{
-                commit = "Unknown"
         }</span>
 
         <span class="cov8" title="1">result := Name + ":\n"
-        result += "    Version: " + buildinfo.Main.Version + "\n"
+        result += "    Version: " + gitVersion + "\n"
         result += "    Commit:  " + commit + "\n"
         result += "    Go:      " + runtime.Version() + "\n"
 
