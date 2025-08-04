@@ -4,3 +4,8 @@
 # Generated go-test coverage reports
 coverprofiles/
 coverprofile.out
+
+# Packit RPM builds
+/tmp
+/x86_64
+/aarch64
