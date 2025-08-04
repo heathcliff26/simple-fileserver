@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="service">
+    <id>io.github.heathcliff26.simple-fileserver</id>
+
+    <name>simple-fileserver</name>
+    <summary>Minimal http file server</summary>
+
+    <metadata_license>MIT</metadata_license>
+    <project_license>Apache-2.0</project_license>
+
+    <description>
+        <p>
+            Minimal http file server using golangs standard http library. It is a standalone binary without dependencies.
+        </p>
+    </description>
+
+    <url type="homepage">https://github.com/heathcliff26/simple-fileserver</url>
+    <developer id="io.github.heathcliff26">
+        <name>Heathcliff</name>
+    </developer>
+
+    <launchable type="service">simple-fileserver.service</launchable>
+
+    <categories>
+        <category>Network</category>
+        <category>FileTransfer</category>
+    </categories>
+</component>

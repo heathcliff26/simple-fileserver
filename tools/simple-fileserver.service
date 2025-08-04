@@ -1,0 +1,13 @@
+[Unit]
+Description=Minimal http file server on port 8080
+After=network.target
+Wants=network-online.target
+
+[Service]
+Restart=always
+Type=simple
+ExecStart=/usr/bin/simple-fileserver
+Environment='SFILESERVER_WEBROOT=/var/www/html'
+
+[Install]
+WantedBy=multi-user.target
