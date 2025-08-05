@@ -76,6 +76,13 @@ jobs:
       cache: false
       cmd: "make validate"
 
+  e2e:
+    uses: heathcliff26/ci/.github/workflows/golang-unit-tests.yaml@main
+    permissions:
+      contents: read
+    with:
+      cmd: "make test-e2e"
+
   build-binary:
     uses: heathcliff26/ci/.github/workflows/golang-build.yaml@main
     permissions:
@@ -109,6 +116,9 @@ jobs:
     needs:
       - lint
       - unit-tests
+      - validate
+      - gosec
+      - e2e
     permissions:
       contents: read
       packages: write
