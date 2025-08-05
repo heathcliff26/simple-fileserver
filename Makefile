@@ -14,7 +14,11 @@ build-image:
 
 # Run unit-tests
 test:
-	go test -v -coverprofile=coverprofile.out ./...
+	go test -v -coverprofile=coverprofile.out ./cmd/... ./pkg/...
+
+# Run e2e tests
+test-e2e:
+	go test -v ./tests/e2e/...
 
 # Update dependencies
 update-deps:
@@ -70,6 +74,7 @@ help:
 	build \
 	build-image \
 	test \
+	test-e2e \
 	update-deps \
 	lint \
 	fmt \
