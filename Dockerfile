@@ -19,7 +19,7 @@ RUN GOOS=linux GOARCH="${TARGETARCH}" hack/build.sh
 ###############################################################################
 # BEGIN final-stage
 # Create final docker image
-FROM scratch AS final-stage
+FROM --platform=$TARGETPLATFORM scratch AS final-stage
 
 COPY --from=build-stage /app/bin/simple-fileserver /
 
