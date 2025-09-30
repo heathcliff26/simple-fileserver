@@ -49,7 +49,8 @@ $ podman run -d -p 8080:8080 -v /path/to/content:/webroot ghcr.io/heathcliff26/s
 | Container Registry                                                                                     | Image                                      |
 | ------------------------------------------------------------------------------------------------------ | ------------------------------------------ |
 | [Github Container](https://github.com/users/heathcliff26/packages/container/package/simple-fileserver) | `ghcr.io/heathcliff26/simple-fileserver`   |
-| [Docker Hub](https://hub.docker.com/r/heathcliff26/simple-fileserver)                  | `docker.io/heathcliff26/simple-fileserver` |
+| [Docker Hub](https://hub.docker.com/r/heathcliff26/simple-fileserver)                                  | `docker.io/heathcliff26/simple-fileserver` |
+| [Quay.io](https://quay.io/repository/heathcliff26/simple-fileserver)                                   | `quay.io/heathcliff26/simple-fileserver`   |
 
 ### Tags
 
