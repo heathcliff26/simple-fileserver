@@ -25,7 +25,7 @@ COPY --from=build-stage /app/bin/simple-fileserver /
 
 EXPOSE 8080
 
-USER 1001
+USER 65534:65534
 
 WORKDIR /webroot
 
