@@ -51,25 +51,25 @@ on:
 
 jobs:
   lint:
-    uses: heathcliff26/ci/.github/workflows/golang-lint.yaml@main
+    uses: heathcliff26/ci/.github/workflows/golang-lint.yaml@482d6b77bbafaa616f7b29ee8086e998ceb2ab7c # main
     permissions:
       contents: read
 
   gosec:
-    uses: heathcliff26/ci/.github/workflows/golang-gosec.yaml@main
+    uses: heathcliff26/ci/.github/workflows/golang-gosec.yaml@482d6b77bbafaa616f7b29ee8086e998ceb2ab7c # main
     permissions:
       contents: read
       security-events: write
 
   unit-tests:
-    uses: heathcliff26/ci/.github/workflows/golang-unit-tests.yaml@main
+    uses: heathcliff26/ci/.github/workflows/golang-unit-tests.yaml@482d6b77bbafaa616f7b29ee8086e998ceb2ab7c # main
     permissions:
       contents: read
     with:
       coveralls: ${{ github.event_name == 'pull_request' || github.event_name == 'merge_group' }}
 
   validate:
-    uses: heathcliff26/ci/.github/workflows/golang-build.yaml@main
+    uses: heathcliff26/ci/.github/workflows/golang-build.yaml@482d6b77bbafaa616f7b29ee8086e998ceb2ab7c # main
     permissions:
       contents: read
     with:
@@ -77,14 +77,14 @@ jobs:
       cmd: "make validate"
 
   e2e:
-    uses: heathcliff26/ci/.github/workflows/golang-unit-tests.yaml@main
+    uses: heathcliff26/ci/.github/workflows/golang-unit-tests.yaml@482d6b77bbafaa616f7b29ee8086e998ceb2ab7c # main
     permissions:
       contents: read
     with:
       cmd: "make test-e2e"
 
   build-binary:
-    uses: heathcliff26/ci/.github/workflows/golang-build.yaml@main
+    uses: heathcliff26/ci/.github/workflows/golang-build.yaml@482d6b77bbafaa616f7b29ee8086e998ceb2ab7c # main
     permissions:
       contents: read
     needs:
@@ -112,7 +112,7 @@ jobs:
     secrets: inherit
 
   build-image:
-    uses: heathcliff26/ci/.github/workflows/build-container.yaml@main
+    uses: heathcliff26/ci/.github/workflows/build-container.yaml@482d6b77bbafaa616f7b29ee8086e998ceb2ab7c # main
     needs:
       - lint
       - unit-tests
