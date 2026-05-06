@@ -90,25 +90,11 @@ jobs:
     needs:
       - lint
       - unit-tests
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: linux
-            arch: amd64
-          - os: linux
-            arch: arm64
-          - os: windows
-            arch: amd64
-          - os: windows
-            arch: arm64
     with:
       release: "${{ github.event_name == 'pull_request' && 'devel' || inputs.tag == '' && 'rolling' || inputs.tag }}"
-      goos: "${{ matrix.os }}"
-      goarch: "${{ matrix.arch }}"
-      artifact: "bin/simple-fileserver-${{ matrix.os }}-${{ matrix.arch }}*"
-      artifact-name: "simple-fileserver-${{ matrix.os }}-${{ matrix.arch }}"
-      cmd: "hack/build.sh simple-fileserver-${{ matrix.os }}-${{ matrix.arch }}"
+      artifact: "dist/simple-fileserver*"
+      artifact-name: "simple-fileserver"
+      cmd: "make release"
     secrets: inherit
 
   build-image:

@@ -1,5 +1,6 @@
 # Ignore binaries
 /bin
+/dist
 
 # Generated go-test coverage reports
 coverprofiles/
