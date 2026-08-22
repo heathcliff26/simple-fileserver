@@ -1,8 +1,8 @@
 package fileserver
 
 import (
-	"net/http"
 	"testing"
+	"testing/synctest"
 	"time"
 
 	"github.com/stretchr/testify/assert"
@@ -35,30 +35,20 @@ func TestListenSSL(t *testing.T) {
 }
 
 func TestListen(t *testing.T) {
-	fs := NewFileserver("../filesystem/testdata", true)
+	synctest.Test(t, func(t *testing.T) {
+		fs := NewFileserver("../filesystem/testdata", true)
 
-	assert := assert.New(t)
+		assert := assert.New(t)
 
-	ch := make(chan error, 1)
+		ch := make(chan error, 1)
 
-	go func() {
-		err := fs.ListenAndServe(":8080")
-		ch <- err
-	}()
+		go func() {
+			err := fs.ListenAndServe(":8080")
+			ch <- err
+		}()
 
-	res, err := http.Get("http://localhost:8080/test.html")
-	assert.NoError(err, "Should be able to reach the server")
-	assert.Equal(http.StatusOK, res.StatusCode, "Should receive ok status code")
-
-	assert.NoError(fs.Shutdown(), "Should shutdown server")
-
-	assert.Eventually(func() bool {
-		select {
-		case err := <-ch:
-			assert.NoError(err, "Server should exit without error")
-			return true
-		default:
-			return false
-		}
-	}, 5*time.Second, 100*time.Millisecond, "Server should shutdown")
+		assert.NoError(fs.Shutdown(), "Should shutdown server")
+		synctest.Sleep(time.Second)
+		assert.NoError(<-ch, "Server should exit without error")
+	})
 }

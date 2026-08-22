@@ -12,18 +12,18 @@ upstream_package_name: simple-fileserver
 # downstream (Fedora) RPM package name
 downstream_package_name: simple-fileserver
 
+targets:
+  - fedora-all-x86_64
+  - fedora-all-aarch64
+additional_repos:
+  - copr://heathcliff26/golang
+
 jobs:
   - job: copr_build
     trigger: pull_request
     branch: main
-    targets:
-      - fedora-all-x86_64
-      - fedora-all-aarch64
 
   - job: copr_build
     trigger: release
-    targets:
-      - fedora-all-x86_64
-      - fedora-all-aarch64
     owner: heathcliff26
     project: cli
