@@ -65,7 +65,7 @@
 				
 				<option value="file4">github.com/heathcliff26/simple-fileserver/pkg/middleware/logging.go (100.0%)</option>
 				
-				<option value="file5">github.com/heathcliff26/simple-fileserver/pkg/version/version.go (92.0%)</option>
+				<option value="file5">github.com/heathcliff26/simple-fileserver/pkg/version/version.go (93.3%)</option>
 				
 				</select>
 			</div>
@@ -94,79 +94,79 @@ import (
 
 const defaultPort = 8080
 
-func init() <span class="cov8" title="1">{
-        flag.StringVar(&amp;webroot, "webroot", "", "SFILESERVER_WEBROOT: Required, root directory to serve files from")
+func init() {
+        <span class="cov8" title="1">flag.StringVar(&amp;webroot, "webroot", "", "SFILESERVER_WEBROOT: Required, root directory to serve files from")
         flag.IntVar(&amp;port, "port", defaultPort, "SFILESERVER_PORT: Specify port for the fileserver to listen on")
         flag.StringVar(&amp;sslCert, "cert", "", "SFILESERVER_CERT: SSL certificate to use, needs key as well. Default is no ssl.")
         flag.StringVar(&amp;sslKey, "key", "", "SFILESERVER_KEY: SSL private key to use, needs cert as well. Default is no ssl.")
         flag.BoolVar(&amp;withoutIndex, "no-index", false, "SFILESERVER_NO_INDEX: Do not serve an index for directories, return index.html or 404 instead")
         flag.BoolVar(&amp;enableLogging, "log", false, "SFILESERVER_LOG: Enable logging requests")
         flag.BoolVar(&amp;showVersion, "version", false, "Show the version information and exit")
-}</span>
+</span>}
 
-func envBool(target *bool, name string) <span class="cov8" title="1">{
-        if val, ok := os.LookupEnv(name); ok </span><span class="cov8" title="1">{
-                *target = strings.ToLower(val) == "true" || val == "1"
-        }</span>
+func envBool(target *bool, name string) {
+        <span class="cov8" title="1">if val, ok := os.LookupEnv(name); ok </span>{
+                <span class="cov8" title="1">*target = strings.ToLower(val) == "true" || val == "1"
+</span>        }
 }
 
-func envString(target *string, name string) <span class="cov8" title="1">{
-        if val, ok := os.LookupEnv(name); ok </span><span class="cov8" title="1">{
-                *target = val
-        }</span>
+func envString(target *string, name string) {
+        <span class="cov8" title="1">if val, ok := os.LookupEnv(name); ok </span>{
+                <span class="cov8" title="1">*target = val
+</span>        }
 }
 
 // Parse Options not provided by the CLI Arguments from ENV
-func parseEnv() <span class="cov8" title="1">{
-        if webroot == "" </span><span class="cov8" title="1">{
-                envString(&amp;webroot, "SFILESERVER_WEBROOT")
-        }</span>
+func parseEnv() {
+        <span class="cov8" title="1">if webroot == "" </span>{
+                <span class="cov8" title="1">envString(&amp;webroot, "SFILESERVER_WEBROOT")
+</span>        }
 
-        <span class="cov8" title="1">if port == defaultPort </span><span class="cov8" title="1">{
-                if val, ok := os.LookupEnv("SFILESERVER_PORT"); ok </span><span class="cov8" title="1">{
-                        var err error
+        <span class="cov8" title="1">if port == defaultPort </span>{
+                <span class="cov8" title="1">if val, ok := os.LookupEnv("SFILESERVER_PORT"); ok </span>{
+                        <span class="cov8" title="1">var err error
                         port, err = strconv.Atoi(val)
-                        if err != nil </span><span class="cov8" title="1">{
-                                slog.Error("Could not parse SFILESERVER_PORT", "err", err)
+                        if err != nil </span>{
+                                <span class="cov8" title="1">slog.Error("Could not parse SFILESERVER_PORT", "err", err)
                                 os.Exit(1)
-                        }</span>
+</span>                        }
                 }
         }
 
-        <span class="cov8" title="1">if sslCert == "" </span><span class="cov8" title="1">{
-                envString(&amp;sslCert, "SFILESERVER_CERT")
-        }</span>
+        <span class="cov8" title="1">if sslCert == "" </span>{
+                <span class="cov8" title="1">envString(&amp;sslCert, "SFILESERVER_CERT")
+</span>        }
 
-        <span class="cov8" title="1">if sslKey == "" </span><span class="cov8" title="1">{
-                envString(&amp;sslKey, "SFILESERVER_KEY")
-        }</span>
+        <span class="cov8" title="1">if sslKey == "" </span>{
+                <span class="cov8" title="1">envString(&amp;sslKey, "SFILESERVER_KEY")
+</span>        }
 
-        <span class="cov8" title="1">if !withoutIndex </span><span class="cov8" title="1">{
-                envBool(&amp;withoutIndex, "SFILESERVER_NO_INDEX")
-        }</span>
+        <span class="cov8" title="1">if !withoutIndex </span>{
+                <span class="cov8" title="1">envBool(&amp;withoutIndex, "SFILESERVER_NO_INDEX")
+</span>        }
 
-        <span class="cov8" title="1">if !enableLogging </span><span class="cov8" title="1">{
-                envBool(&amp;enableLogging, "SFILESERVER_LOG")
-        }</span>
+        <span class="cov8" title="1">if !enableLogging </span>{
+                <span class="cov8" title="1">envBool(&amp;enableLogging, "SFILESERVER_LOG")
+</span>        }
 }
 
 // Parse CLI Arguments and check the input.
-func parseFlags() <span class="cov8" title="1">{
-        flag.Parse()
-        if showVersion </span><span class="cov8" title="1">{
-                fmt.Print(version.Version())
+func parseFlags() {
+        <span class="cov8" title="1">flag.Parse()
+        if showVersion </span>{
+                <span class="cov8" title="1">fmt.Print(version.Version())
                 os.Exit(0)
-        }</span>
+</span>        }
         <span class="cov8" title="1">parseEnv()
-
-        if webroot == "" </span><span class="cov8" title="1">{
-                slog.Error("No Webroot: Either -webroot or SFILESERVER_WEBROOT need to be set")
+</span>
+        <span class="cov8" title="1">if webroot == "" </span>{
+                <span class="cov8" title="1">slog.Error("No Webroot: Either -webroot or SFILESERVER_WEBROOT need to be set")
                 os.Exit(1)
-        }</span>
-        <span class="cov8" title="1">if (sslCert != "" &amp;&amp; sslKey == "") || (sslCert == "" &amp;&amp; sslKey != "") </span><span class="cov8" title="1">{
-                slog.Error("When using ssl need both -cert and -key to be set")
+</span>        }
+        <span class="cov8" title="1">if (sslCert != "" &amp;&amp; sslKey == "") || (sslCert == "" &amp;&amp; sslKey != "") </span>{
+                <span class="cov8" title="1">slog.Error("When using ssl need both -cert and -key to be set")
                 os.Exit(1)
-        }</span>
+</span>        }
 
         <span class="cov8" title="1">slog.Info("Parsed flags",
                 slog.String("webroot", webroot),
@@ -199,25 +199,25 @@ var (
         showVersion   bool
 )
 
-func main() <span class="cov8" title="1">{
-        parseFlags()
-
-        fs := fileserver.NewFileserver(webroot, !withoutIndex)
-
-        if sslCert != "" &amp;&amp; sslKey != "" </span><span class="cov8" title="1">{
-                slog.Info("Enabling ssl")
+func main() {
+        <span class="cov8" title="1">parseFlags()
+</span>
+        <span class="cov8" title="1">fs := fileserver.NewFileserver(webroot, !withoutIndex)
+</span>
+        <span class="cov8" title="1">if sslCert != "" &amp;&amp; sslKey != "" </span>{
+                <span class="cov8" title="1">slog.Info("Enabling ssl")
                 fs.UseSSL(sslCert, sslKey)
-        }</span>
+</span>        }
 
-        <span class="cov8" title="1">if enableLogging </span><span class="cov8" title="1">{
-                slog.SetLogLoggerLevel(slog.LevelDebug)
-        }</span>
+        <span class="cov8" title="1">if enableLogging </span>{
+                <span class="cov8" title="1">slog.SetLogLoggerLevel(slog.LevelDebug)
+</span>        }
 
         <span class="cov8" title="1">err := fs.ListenAndServe(":" + strconv.Itoa(port))
-        if err != nil </span><span class="cov8" title="1">{
-                slog.Error("Failed to run server", "err", err)
+        if err != nil </span>{
+                <span class="cov8" title="1">slog.Error("Failed to run server", "err", err)
                 os.Exit(1)
-        }</span>
+</span>        }
 }
 </pre>
 		
@@ -244,48 +244,48 @@ type Fileserver struct {
         server *http.Server
 }
 
-func NewFileserver(webroot string, index bool) *Fileserver <span class="cov8" title="1">{
-        fs := filesystem.CreateFilesystem(webroot, index)
+func NewFileserver(webroot string, index bool) *Fileserver {
+        <span class="cov8" title="1">fs := filesystem.CreateFilesystem(webroot, index)
         server := http.FileServer(fs)
         return &amp;Fileserver{
                 server: &amp;http.Server{
                         Handler:     middleware.Logging(server),
                         ReadTimeout: 10 * time.Second,
                 },
-        }
-}</span>
+</span>        }
+}
 
-func (s *Fileserver) UseSSL(cert, key string) <span class="cov8" title="1">{
-        s.SSL = SSLConfig{
+func (s *Fileserver) UseSSL(cert, key string) {
+        <span class="cov8" title="1">s.SSL = SSLConfig{
                 Enabled:     true,
                 Certificate: cert,
                 Key:         key,
-        }
-}</span>
+</span>        }
+}
 
-func (s *Fileserver) ListenAndServe(addr string) error <span class="cov8" title="1">{
-        s.server.Addr = addr
+func (s *Fileserver) ListenAndServe(addr string) error {
+        <span class="cov8" title="1">s.server.Addr = addr
         slog.Info("Starting server", slog.String("addr", addr))
-
-        var err error
-        if s.SSL.Enabled </span><span class="cov8" title="1">{
-                err = s.server.ListenAndServeTLS(s.SSL.Certificate, s.SSL.Key)
-
-        }</span> else<span class="cov8" title="1"> {
-                err = s.server.ListenAndServe()
-        }</span>
+</span>
+        <span class="cov8" title="1">var err error
+        if s.SSL.Enabled </span>{
+                <span class="cov8" title="1">err = s.server.ListenAndServeTLS(s.SSL.Certificate, s.SSL.Key)
+</span>
+        } else {
+                <span class="cov8" title="1">err = s.server.ListenAndServe()
+</span>        }
 
         // This just means the server was closed after running
-        <span class="cov8" title="1">if errors.Is(err, http.ErrServerClosed) </span><span class="cov8" title="1">{
-                return nil
-        }</span>
+        <span class="cov8" title="1">if errors.Is(err, http.ErrServerClosed) </span>{
+                <span class="cov8" title="1">return nil
+</span>        }
         <span class="cov8" title="1">return err</span>
 }
 
 // Calls http.Server.Shutdown(), see it's description for more details
-func (s *Fileserver) Shutdown() error <span class="cov8" title="1">{
-        return s.server.Shutdown(context.Background())
-}</span>
+func (s *Fileserver) Shutdown() error {
+        <span class="cov8" title="1">return s.server.Shutdown(context.Background())
+</span>}
 </pre>
 		
 		<pre class="file" id="file3" style="display: none">package filesystem
@@ -300,43 +300,43 @@ type IndexlessFilesystem struct {
 
 // Implement Open() function of interface
 // Only returns without error when the path is either a file or a directory containing an index.html file
-func (ifs IndexlessFilesystem) Open(path string) (http.File, error) <span class="cov8" title="1">{
-        f, err := ifs.fs.Open(path)
-        if err != nil </span><span class="cov8" title="1">{
-                return nil, err
-        }</span>
+func (ifs IndexlessFilesystem) Open(path string) (http.File, error) {
+        <span class="cov8" title="1">f, err := ifs.fs.Open(path)
+        if err != nil </span>{
+                <span class="cov8" title="1">return nil, err
+</span>        }
 
         <span class="cov8" title="1">s, err := f.Stat()
-        if err != nil </span><span class="cov0" title="0">{
-                return nil, err
-        }</span>
+        if err != nil </span>{
+                <span class="cov0" title="0">return nil, err
+</span>        }
 
-        <span class="cov8" title="1">if s.IsDir() </span><span class="cov8" title="1">{
-                index := path + "/index.html"
+        <span class="cov8" title="1">if s.IsDir() </span>{
+                <span class="cov8" title="1">index := path + "/index.html"
                 _, err := ifs.fs.Open(index)
-                if err != nil </span><span class="cov8" title="1">{
-                        _ = f.Close()
+                if err != nil </span>{
+                        <span class="cov8" title="1">_ = f.Close()
                         return nil, err
-                }</span>
+</span>                }
         }
 
         <span class="cov8" title="1">return f, nil</span>
 }
 
 // Return a filesystem with or without index enabled
-func CreateFilesystem(path string, index bool) http.FileSystem <span class="cov8" title="1">{
-        fs := http.Dir(path)
-        if index </span><span class="cov8" title="1">{
-                return fs
-        }</span> else<span class="cov8" title="1"> {
-                return NewIndexlessFilesystem(fs)
-        }</span>
+func CreateFilesystem(path string, index bool) http.FileSystem {
+        <span class="cov8" title="1">fs := http.Dir(path)
+        if index </span>{
+                <span class="cov8" title="1">return fs
+</span>        } else {
+                <span class="cov8" title="1">return NewIndexlessFilesystem(fs)
+</span>        }
 }
 
 // Create an indexless Filesystem from an existing filesystem
-func NewIndexlessFilesystem(fs http.FileSystem) IndexlessFilesystem <span class="cov8" title="1">{
-        return IndexlessFilesystem{fs}
-}</span>
+func NewIndexlessFilesystem(fs http.FileSystem) IndexlessFilesystem {
+        <span class="cov8" title="1">return IndexlessFilesystem{fs}
+</span>}
 </pre>
 		
 		<pre class="file" id="file4" style="display: none">package middleware
@@ -354,32 +354,32 @@ type responseWrapper struct {
 }
 
 // Save the written code locally after writing it to the actual ResponseWriter
-func (res *responseWrapper) WriteHeader(statusCode int) <span class="cov8" title="1">{
-        res.ResponseWriter.WriteHeader(statusCode)
+func (res *responseWrapper) WriteHeader(statusCode int) {
+        <span class="cov8" title="1">res.ResponseWriter.WriteHeader(statusCode)
         res.statusCode = statusCode
-}</span>
+</span>}
 
 // This middleware writes information about the request to the log after it has been answered.
 // Used log level: debug
-func Logging(next http.Handler) http.Handler <span class="cov8" title="1">{
-        return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) </span><span class="cov8" title="1">{
-                start := time.Now()
-
-                wrapped := &amp;responseWrapper{
+func Logging(next http.Handler) http.Handler {
+        <span class="cov8" title="1">return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) </span>{
+                <span class="cov8" title="1">start := time.Now()
+</span>
+                <span class="cov8" title="1">wrapped := &amp;responseWrapper{
                         ResponseWriter: res,
                         statusCode:     http.StatusOK,
-                }
+</span>                }
 
-                next.ServeHTTP(wrapped, req)
-
-                slog.Debug("Got Request",
+                <span class="cov8" title="1">next.ServeHTTP(wrapped, req)
+</span>
+                <span class="cov8" title="1">slog.Debug("Got Request",
                         slog.String("source", ReadUserIP(req)),
                         slog.Int("status", wrapped.statusCode),
                         slog.String("method", req.Method),
                         slog.String("path", req.URL.Path),
                         slog.Any("took", time.Since(start)),
                 )
-        }</span>)
+</span>        })
 }
 
 // Reads the user IP from the request. Takes proxies into account.
@@ -388,14 +388,14 @@ func Logging(next http.Handler) http.Handler <span class="cov8" title="1">{
 //        x-real-ip Header
 //        x-forwarded-for Header
 //        RemoteAddr stored in the request
-func ReadUserIP(req *http.Request) string <span class="cov8" title="1">{
-        IPAddress := req.Header.Get("x-real-ip")
-        if IPAddress == "" </span><span class="cov8" title="1">{
-                IPAddress = req.Header.Get("x-forwarded-for")
-        }</span>
-        <span class="cov8" title="1">if IPAddress == "" </span><span class="cov8" title="1">{
-                IPAddress = req.RemoteAddr
-        }</span>
+func ReadUserIP(req *http.Request) string {
+        <span class="cov8" title="1">IPAddress := req.Header.Get("x-real-ip")
+        if IPAddress == "" </span>{
+                <span class="cov8" title="1">IPAddress = req.Header.Get("x-forwarded-for")
+</span>        }
+        <span class="cov8" title="1">if IPAddress == "" </span>{
+                <span class="cov8" title="1">IPAddress = req.RemoteAddr
+</span>        }
         <span class="cov8" title="1">return IPAddress</span>
 }
 </pre>
@@ -416,51 +416,51 @@ const Name = "simple-fileserver"
 var gitCommit string = "$Format:%H$" // sha1 from git, output of $(git rev-parse HEAD)
 var gitVersion string = ""
 
-func init() <span class="cov8" title="1">{
-        initGitCommit()
+func init() {
+        <span class="cov8" title="1">initGitCommit()
         initGitVersion()
-}</span>
+</span>}
 
-func initGitCommit() <span class="cov8" title="1">{
-        if strings.HasPrefix(gitCommit, "$Format") </span><span class="cov8" title="1">{
-                var commit string
+func initGitCommit() {
+        <span class="cov8" title="1">if strings.HasPrefix(gitCommit, "$Format") </span>{
+                <span class="cov8" title="1">var commit string
                 buildinfo, _ := debug.ReadBuildInfo()
-                for _, item := range buildinfo.Settings </span><span class="cov8" title="1">{
-                        if item.Key == "vcs.revision" </span><span class="cov0" title="0">{
-                                commit = item.Value
+                for _, item := range buildinfo.Settings </span>{
+                        <span class="cov8" title="1">if item.Key == "vcs.revision" </span>{
+                                <span class="cov0" title="0">commit = item.Value
                                 break</span>
                         }
                 }
-                <span class="cov8" title="1">if commit == "" </span><span class="cov8" title="1">{
-                        commit = "Unknown"
-                }</span>
+                <span class="cov8" title="1">if commit == "" </span>{
+                        <span class="cov8" title="1">commit = "Unknown"
+</span>                }
                 <span class="cov8" title="1">gitCommit = commit</span>
         }
-        <span class="cov8" title="1">if gitCommit == "" </span><span class="cov8" title="1">{
-                gitCommit = "Unknown"
-        }</span>
+        <span class="cov8" title="1">if gitCommit == "" </span>{
+                <span class="cov8" title="1">gitCommit = "Unknown"
+</span>        }
 }
 
-func initGitVersion() <span class="cov8" title="1">{
-        if gitVersion == "" </span><span class="cov8" title="1">{
-                buildinfo, _ := debug.ReadBuildInfo()
+func initGitVersion() {
+        <span class="cov8" title="1">if gitVersion == "" </span>{
+                <span class="cov8" title="1">buildinfo, _ := debug.ReadBuildInfo()
                 gitVersion = buildinfo.Main.Version
-        }</span>
+</span>        }
 }
 
 // Return a formatted string containing the version, git commit and go version the app was compiled with.
-func Version() string <span class="cov8" title="1">{
-        commit := gitCommit
-        if len(commit) &gt; 7 </span><span class="cov8" title="1">{
-                commit = commit[:7]
-        }</span>
+func Version() string {
+        <span class="cov8" title="1">commit := gitCommit
+        if len(commit) &gt; 7 </span>{
+                <span class="cov8" title="1">commit = commit[:7]
+</span>        }
 
         <span class="cov8" title="1">result := Name + ":\n"
         result += "    Version: " + gitVersion + "\n"
         result += "    Commit:  " + commit + "\n"
         result += "    Go:      " + runtime.Version() + "\n"
-
-        return result</span>
+</span>
+        <span class="cov8" title="1">return result</span>
 }
 </pre>
 		
