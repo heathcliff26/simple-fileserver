@@ -26,6 +26,37 @@ builds:
 archives:
   - formats: ["binary"]
 
+nfpms:
+  - package_name: "{{ .ProjectName }}"
+    file_name_template: "{{ .PackageName }}-linux-{{ .Arch }}"
+    maintainer: "Heathcliff <heathcliff@heathcliff.eu>"
+    description: A golang implementation of a minimal http file server.
+    license: Apache-2.0
+    homepage: https://github.com/heathcliff26/{{ .ProjectName }}
+    formats:
+      - deb
+      - rpm
+    bindir: /usr/bin
+    contents:
+      - dst: /usr/share/licenses/{{ .PackageName }}
+        type: dir
+      - dst: /usr/share/doc/{{ .PackageName }}
+        type: dir
+      - src: LICENSE
+        dst: /usr/share/licenses/{{ .PackageName }}/LICENSE
+      - src: README.md
+        dst: /usr/share/doc/{{ .PackageName }}/README.md
+      - src: tools/{{ .PackageName }}.service
+        dst: /usr/lib/systemd/system/{{ .PackageName }}.service
+      - src: io.github.heathcliff26.{{ .PackageName }}.metainfo.xml
+        dst: /usr/share/metainfo/io.github.heathcliff26.{{ .PackageName }}.metainfo.xml
+    scripts:
+      postinstall: "tools/postinstall.sh"
+      preremove: "tools/preremove.sh"
+      postremove: "tools/postremove.sh"
+    rpm:
+      summary: Minimal http file server
+
 changelog:
   disable: true
 release:
