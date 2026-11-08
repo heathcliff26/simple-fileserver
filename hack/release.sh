@@ -45,4 +45,4 @@ done
 
 
 echo "Cleaning up dist directory"
-rm -r "${dist_dir}/artifacts.json" "${dist_dir}/config.yaml" "${dist_dir}/metadata.json"
+rm -r "${dist_dir}/artifacts.json" "${dist_dir}/config.yaml" "${dist_dir}/metadata.json" "${dist_dir}/${name}"_*_checksums.txt
